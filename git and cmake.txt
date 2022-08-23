@@ -1,0 +1,622 @@
+##############################  GIT操作：：########################################################
+
+过滤器是 -S（俗称“pickaxe”选项，取“用鹤嘴锄在土里捡石头”之意）， 它接受一个字符串参数，并且只会显示那些添加或删除了该字符串的提交。
+假设你想找出添加或删除了对某一个特定函数的引用的提交，可以调用：
+$ git log -S function_name
+
+
+git log -G"你要查找的文本内容" -p
+其中：-G 是查正则的，查文本用 -S
+
+git log -G "fdsvr" -p
+git show 3b60128a1dfcec5c5f203d3ed07907f89deff65f
+
+在使用git的过程中，我们经常需要查看某次commit修改了哪些内容，与之相关的命令就是:
+git log
+git show
+首先，需要通过git log打印所有commit hashID，之后的git show都是基于commit hashID输出的。
+1.查看最新的commit
+git show
+2.查看指定commit hashID的所有修改：
+git show commitId
+eg:  git show 32d7841306a82ad8e715b60ab058a07ac8aec6de
+
+$ pwd – 该命令用于显示当前目录
+$ git init --创建.git 目录（该目录默认是隐藏的，若没有看到.git目录，使用ls -ah）
+$ git status --查看当前版本库状态
+$ git add . --将所有文件添加到暂存区
+$ git add xxx --将xxx 文件添加到暂存区
+$ git commit -m “提交信息” --将文件提交到本地版本库
+$ git log --查看历史提交日志
+$ git reset --hard HEAD^ --版本回退（HEAD^指每个版本的版本号）
+$ git push -f --强制推送
+$ git checkout – xxx --把xxx文件在工作区的修改全部撤销
+$ rm xxx --将xxx文件删除
+$ git remote add origin 仓库地址 --将本地仓库和远程仓库做连接
+$ git push origin master --将本地仓库文件推送到远程仓库（master为仓库分支）
+$ git clone 远程仓库地址 --将远程仓库内的所有文件克隆到本地
+$ git checkout -b dev --创建并切换dev分支
+$ git branch dev --创建dev分支
+$ git checkout dev --切换到dev分支
+$ git branch --查看当前分支
+$ git merge dev --将dev分支合并到master主分支上
+$ git branch -d dev --删除当前dev分支
+
+
+##############################  GIT常规操作：：########################################################
+1、git branch -av                                  【查看所有分支】
+2、git checkout 分支名                             【进入对应分支名的分支】
+3、git checkout -b 分支名                          【创建新的分支】
+4、git log                                         【查看提交记录】
+
+5、git status                                      【查看状态】
+6、git add  文件                                   【添加对应文件】
+7、git commit -m "说明"                            【添加文件时的说明】
+8、git push --set-upstream origin develop_liying   【push到对应分支，此中是：develop_liying】
+9、git diff                                        【比较文件】
+
+git命令行修改文件操作：
+1、git checkout develop                           【先切换到develop分支】
+2、git branch -a                                  【查看所有分支】
+3、git branch -d develop_liying  或者  git branch -D develop_liying [强制删除]       【删除本地已有的develop_liying分支】
+4、git branch -d -r origin/develop_liying         【删除远端仓库自己的分支】
+5、git pull                         【把服务器上的文件同步到本地，更新本地文件为最新。防止服务器上已有别人提交的新的文件】
+6、git checkout -b develop_liying                 【重新建立自己的develop分支】
+7、修改文件
+8、git status                                      【查看状态】
+9、git add . 文件                                   【添加对应文件】
+10、git commit -m "说明"                            【添加文件时的说明】
+11、git push 或者 git push --set-upstream origin develop_liying   【push到远端对应分支，此中是：develop_liying】
+12、在自己的分支develop_liying：merge request --> 添加描述：Description、 选择代理人：Assignee、切换分支：change branches到develop
+13、在Jenkins自动化构建平台 --> 横栏AAU --> ARU_DEVELOP 或者AIU_DMBG_NXP -> 立即构建 --> Build History 查找自己刚刚提交的任务号并进去 
+    --> 查看Console Output 和View as plain text ：查看确认提交的文件的编译情况
+14、在5g-artifactory查看提取版本：AAU：ARU和AIU
+15、git checkout --  src/TDB36A_DD/AAU/ADI/src/api/mykonos/mykonos_gpio.c   【还原修改的文件】
+
+git diff develop_liying...develop   比较文件
+git log  
+git diff 
+git pull
+git pull -v --progress "origin" develop
+git push --set-upstream origin develop_liying
+
+先自己compare，出测试版本。
+
+在自己的分支下 develop_liying ：
+git pull                                【注意source insight中文件未更新时，重新添加刷新文件】
+git status          
+git add .                     添加所有更改过的文件
+git commit -m "说明"
+git status 
+git push
+   
+误改文件还原： 
+git checkout --  src/TDB36A_DD/AAU/ADI/src/api/mykonos/mykonos_gpio.c
+git checkout --  src/TDB36A_DD/AAU/drivers/comm/rru_init.c
+
+$ git diff develop_liying...develop   比较文件
+
+
+###########################  git命令行修改文件操作  ###############################################################################
+：history
+1、git checkout develop                           【先切换到develop分支】
+2、git branch -a                                  【查看所有分支】
+3、git branch -d develop_liying  或者  git branch -D develop_liying [强制删除]       【删除本地已有的develop_liying分支】
+4、git branch -d -r origin/develop_liying         【删除远端仓库自己的分支】
+4、git push origin --delete aau_develop_ly_aaupower
+5、git pull                         【把服务器上的文件同步到本地，更新本地文件为最新。防止服务器上已有别人提交的新的文件】
+6、git checkout -b develop_liying                 【重新建立自己的develop分支】
+7、修改文件
+8、git status                                      【查看状态】
+8、git diff                                      【查看更改的具体内容】
+9、git add . 文件                                   【添加对应文件】
+10、git commit -m "说明"                            【添加文件时的说明】
+11、git push 或者 git push --set-upstream origin develop_liying   【push到远端对应分支，此中是：develop_liying】
+12、在自己的分支develop_liying：merge request --> 添加描述：Description、 选择代理人：Assignee、切换分支：change branches到develop
+13、在Jenkins自动化构建平台 --> 横栏AAU --> ARU_DEVELOP 或者AIU_DMBG_NXP --> 立即构建 --> Build History 查找自己刚刚提交的任务号并进去 
+    --> 查看Console Output 和View as plain text ：查看确认提交的文件的编译情况
+14、在5g-artifactory查看提取版本：AAU：ARU和AIU
+15、git checkout --  src/TDB36A_DD/AAU/ADI/src/api/mykonos/mykonos_gpio.c   【还原修改的文件】
+16、git branch -a | grep V0.90.00.01_TDAU5264N41    查找特定分支： V0.90.00.01_TDAU5264N41 
+
+11、拉取合并远端的别的分支代码到当前本地分支代码里，：右键 -> pull ->Remote Branch -> develop
+eg:把远端 develop 代码更新到 develop_2.6GFREQ 里  【进行代码更新，develop_2.6GFREQ里就更新了develop里更新的代码】
+
+11.1 拉取远端别的分支代码到本地现用分支里 git 命令行方法：
+liying5@BA3-26807-A01 MINGW32 /d/git/develop/AAU (aau_develop_aiu_ly_ac)
+$ git pull origin aau_develop
+注：拉取远端仓库aau_develop分支到本地现用aau_develop_aiu_ly_ac分支。
+之后直接 git push  就把拉下来的新东西推到自己的远端仓库了
+
+
+当修改的东西没提交，但是切换分支时，修改的东西一直在，想撤回修改方法：用小乌龟：Tortositgit -> Revert 
+
+大唐规范： 
+ git commit -m "修改/增加/删除XXX文件，解决XXX问题（正式版本需要注明BUG号和BUG描述信息），修改人，精确到小时的修改时间（如20180421|16）"
+
+############################## 20180711 当develop的新建分支1想要合并到新建分支2时 ##########################
+1、在本地git bash 新建 develop_1,做稍微测试改动，push到远端develop_1
+2、在本地git bash 新建 develop_2,做稍微测试改动，push到远端develop_2
+3、把develop_1 merge 到 develop_2 即可。
+4、在本地git bash 的develop_2下：git pull ，则develop_2下的代码就更新为develop_1的了。
+
+
+##############################  git小乌龟用法： #################################################################################
+
+创建自己分支：Project -> 中间横栏 Fork 【创建自己分支生成对应 URL】 ->代码提交后 同一界面 -> Create Merge Request[只有有新代码改动时才会出现此Merge请求]
+*****操作：先在对应工程的文件夹右键Tortoise： pull 【选择origin】-> 修改代码 -> commint[此时可同时查看修改的文件] -> push 【此时选择自己分支Destination：Remote: liying】 -> 
+      Create Merge Request【只有有代码改动时才会出现】 ->
+      -> New Merge Request：1、AIU：Source branch为：liying5/AAU  develop_dmbg  ; Target branch为：SP/AAU develop_dmbg
+                            2、ARU：Source branch为：liying5/AAU  develop       ; Target branch为：SP/AAU develop
+                            
+编译版本：在Jenkins自动化构建平台 --> 横栏AAU --> ARU_DEVELOP 或者AIU_DMBG_NXP --> 立即构建 --> Build History 查找自己刚刚提交的任务号并进去 
+          --> 查看Console Output 和View as plain text ：查看确认提交的文件的编译情况
+
+注：当pull无法下载或者增加分支创建另外工程时，在对应文件夹右键 Tortoise：-> Settings:
+    Git -> Remote  -> liying ->
+      remote:liying [工程名字] rename
+         URL：ssh://git@ci.datangmobile.cn:2022/liying5/AAU.git [创建自己 Fork 分支时生成的]
+         
+新建分支和工程：
+1、新建所需工程文件夹：eg:aru_afe7689
+2、右键aru_afe7689此文件夹：git clone 此时出现：URL -> 选择 SP/AAU： ssh://git@ci.datangmobile.cn:2022/SP/AAU.git 【clone的时候：SP/AAU的URL】
+3、此时进入文件夹aru_afe7689 -> AAU 右键此文件夹：-> Setting -> Git -> Remote -> 此时Remote下就只有：origin ，需要新建自己的分支：
+         remote:liying [工程名字] rename
+         URL：ssh://git@ci.datangmobile.cn:2022/liying5/AAU.git【李营/AAU的URL  Setting的时候】
+   然后确定 -> NO -> NO 
+4、第一次配置此工程时：AAU 右键 -> Tortoise：-> Switch/Checkout -> Switch to -> Branch : develop 或者 ARU_AEF7689 【根据具体工程选择，此处为：ARU_AEF7689】
+5、AAU 右键 -> Tortoise：-> pull 【选择origin -> 】 -> Remote Branch 选择对应分支：ARU_AFE7688  -> OK
+6、操作：先在对应工程的文件夹右键Tortoise： pull 【选择origin】-> 修改代码 -> commint[此时可同时查看修改的文件] -> 
+         push 【此时选择自己分支Destination：Remote: liying】 ->  Create Merge Request【只有有代码改动时才会出现】 ->
+7、假如AAU 右键 -> Tortoise：时没有pull,是有提交的文件冲突了，需要处理，处理时可根据具体内容解决冲突。
+8、每次push前先pull下，以防在修改代码过程中，别人有新的推送【remote ：origin -> 对应的工程分支】
+9、假如push时出现Conflict，应当 AAU 右键 -> Tortoise：revert【恢复】 -> 重新pull -> 修改代码 -> push 
+10、  Create Merge Request【只有有代码改动时才会出现】 ->
+      -> New Merge Request：1、AIU：Source branch为：liying5/AAU  develop_dmbg  ; Target branch为：SP/AAU develop_dmbg
+                            2、ARU：Source branch为：liying5/AAU  develop       ; Target branch为：SP/AAU develop
+11、拉取合并远端的别的分支代码到当前本地分支代码里，：右键 -> pull ->Remote Branch -> develop
+eg:把远端 develop 代码更新到 develop_2.6GFREQ 里  【进行代码更新，develop_2.6GFREQ里就更新了develop里更新的代码】
+
+11.1 拉取远端别的分支代码到本地现用分支里 git 命令行方法：
+liying5@BA3-26807-A01 MINGW32 /d/git/develop/AAU (aau_develop_aiu_ly_ac)
+$ git pull origin aau_develop
+注：拉取远端仓库aau_develop分支到本地现用aau_develop_aiu_ly_ac分支。
+
+当修改的东西没提交，但是切换分支时，修改的东西一直在，想撤回修改方法：用小乌龟：Tortositgit -> Revert 
+
+
+大唐规范： 
+ git commit -m "修改/增加/删除XXX文件，解决XXX问题（正式版本需要注明BUG号和BUG描述信息），修改人，精确到小时的修改时间（如20180421|16）"
+
+
+
+1.先在命令行：ssh-keygen 生成密匙【可在/C/Users/liying5/.ssh/id_rsa.pub查看，用UE打开】
+2.打开gitlab个人配置页面，打开方式：点击左上角的三条横线图标，然后选择Profile Settings菜单，
+  页面跳转后，选择SSH Keys标签，把复制的key贴到编辑框中，然后点击绿色的Add Key按钮即可。
+3.服务器仓库地址配置完成后，接下来就是同步（包括pull和push两个操作）服务器代码，这里只用tortoisegit工具进行，命令行方式参考4.1.3.1小节。
+  使用tortoisegit 同步代码时，遇到如下错误：Disconnected:
+解决办法：打开tortoisegit的配置窗口，找到Network信息配置页，如下图：
+SSH client配置信息是默认的路径，点击Browse按钮，找到git的安装目录下的usr/bin/ssh.exe文件，点击“打开”按钮，如下图
+然后点击确定按钮，关闭配置对话框，再次尝试同步即可。
+
+服务器版本编译:
+1、查看新代码：Gitlab代码库中SP/AAU 自己分支上: compare 以下【可省略】
+2、编译新版本：Jenkins --> AAU --> ARU_DEVELOP 或者AIU_DMBG_NXP  --> 立即构建编译  查看下面Build History对应编译版本号的结果 
+   --> Console Output --> 查看编译结果 ：SUCCESS 编译通过
+3、提取新版本：Artifactory --> 左边文件库 --> repo-5g --> AAU --> workspace --> ARU 找到对应版本号的版本
+   先看下nm_hl.txt是否有错误【考到UE上查找 [U rru]确认问题 】，然后再提取版本
+
+####################################### git冲突解决 ####################################################################################
+1：
+远程自己的分支merge到公共分支时出现冲突：造成原因是本地分支push前，没有先pull后再push
+此时，本地的自己的分支已经push到远端自己的分支，所以需要先把自己远端的分支clone下来，然后在此clone下来的文件夹下用git命令行下，进行
+版本回退：1、git reflog 
+          2、git reset --hard cb01f0201dd1a0 【 db23608 是要回退到的正式分支的develop的commit提交的节点commit id，在浏览器commit找到需要回退到的节点commit id】
+          3、git push -f
+2：
+push本地自己的分支到远程自己的分支时出现冲突；造成原因是本地分支push前，要改的文件已被别人改过并且已经推送到了正常分支的远端，
+我先pull远端正式分支到自己本地分支后再修改文件，此时修改的文件是新拉的，已经和自己远端分支不同了【自己远端比较老了】，所以造成冲突。
+此时需要先把自己远端的分支clone下来，然后在此clone下来的文件夹下用git命令行下：把自己远端的分支同步成和正式分支远端一样。
+版本回退：1、git reflog 
+          2、git reset --hard 28be99b  【 db23608 是要回退到的正式分支的commit提交的节点commit id，在浏览器commit找到需要回退到的节点commit id】
+          3、git push -f               【推送到远端】
+
+当修改的东西没提交，但是切换分支时，修改的东西一直在，想撤回修改方法：用小乌龟：Tortositgit -> Revert 
+
+3:当本地仓库与自己的远端仓库冲突时，无法把自己的远端仓库还原，则可以把自己的远端仓库删了，然后pull最新的develop仓库代码。
+  然后再修改。再重新建立自己的远端仓库，然后再push到自己的远端仓库，就可以吧自己的远端仓库merge到远端develop仓库了。
+
+4.同步 mst_aiu_int 到自己分支 mst_aiu_int_pm 时【方法:右键 -> pull -> 由默认分支mst_aiu_int_pm改为mst_aiu_int】，出现stash save ,继续拉取 选择all，
+  之后根据提示close，然后再Source Insight中全局查找 <<<<<<<< HEAD ，把需要的保留，不需要的删除 ，push到远端，直接编过就好。
+eg:【此操作目的：把别人新改动的已经合到主分支的东西，同步到自己本地、远端分支】
+(1.)首先找到冲突等的地方
+<<<<<<< HEAD
+代码：XXXXXXXX  【本地本分支代码 eg:mst_aiu_int_pm】
+=======
+代码：ZZZZZZZZ  【从远端别的分支[eg:mst_aiu_int]拉取得代码】
+>>>>>>> f14a5bc1d5867c7d4be8836e5dc27f9aef27ce18
+(2.)删除冲突中不用的，只保留用的
+例代码：ZZZZZZZZ
+git add .
+git commit -m "内容"
+(3.)推到远端私有分支mst_aiu_int_pm：则mst_aiu_int中代码更新到mst_aiu_int_pm中了
+git push
+(4.)
+在此分支的远端，编译通过即可。
+
+####################################### git 合并私有分支commit为一个方法 ####################################################################################
+法一：
+1、新建分支：在主分支 aau_develop 下建立
+git checkout -b aau_develop_ly_power
+2、把私有特性分支合并到新建的分支
+git merge --squash aau_develop_ly_aaupower
+3、查看修改状态 可看到特性分支的修改都拉到本新建分支了
+git status
+4、添加文件
+git add .
+5、提交commit 把特性分支最终要实现的功能及改动进行描述
+git commit -m "ARU:添加MP2953A电源保护相关；AIU：添加Em2120相关访问接口"
+6、
+git push --set-upstream origin aau_develop_ly_power
+7、在git远端服务器查看推上去的代码，特性分支aau_develop_ly_aaupower的修改完全推到aau_develop_ly_power上了且commit ID只有一个
+8、进行merge
+
+法二：
+1.自己的多个commit合并成一个commit，然后再merge，回退时可以在合成的commit中回退其中的一个：小乌龟 -> show log -> Combine to one commit
+
+
+####################################### git基于正式分支基础，拉新分支出新版本时以用git命令行最易!!! 【以trx7688验证版本为例】######################################################
+1、git pull                         【把服务器上的文件同步到本地，更新本地文件为最新。防止服务器上已有别人提交的新的文件】
+2、git checkout -b develop_trx                 【重新建立所需的develop分支】
+3、修改文件
+4、git status                                      【查看状态】
+5、git add . 文件                                   【添加对应文件】
+6、git commit -m "说明"                            【添加文件时的说明】
+7、push
+8、在分支 develop_trx 查看修改的代码是否已提交【merge request --> 添加描述：Description、 选择代理人：Assignee、提交到分支：change branches develop_trx到develop】
+9、在Jenkins自动化构建平台 --> 横栏AAU --> AAU_RMBEL_ARM  --> 配置 -> 构建环境 ：Branch Specifier (blank for 'any')	：*/develop_trx 
+    -> 立即构建 --> Build History 查找自己刚刚提交的任务号并进去  --> 查看Console Output 和View as plain text ：查看确认提交的文件的编译情况
+10、在5g-artifactory查看提取版本：AAU：ARU和AIU
+11、git checkout -b develop 【重新切回到之前正常分支，source insight工程会有刷新动作】
+
+当修改的东西没提交，但是切换分支时，修改的东西一直在，想撤回修改方法：用小乌龟：Tortositgit -> Revert 
+
+
+############################### 打标签 ############################################################
+接口板：
+git tag -a "AIU_V3.2" 64d251be345822e7f85d -m "AIU_V3.2"
+git push origin AIU_V3.2
+
+64d251be345822e7f85d
+
+git tag -a "ARU_V3.2" 2bd93b7ed197ee8409976dda4a -m "ARU_V3.2"
+git push origin ARU_V3.2
+
+
+############################### SSHKEY ##########################################
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDE20VLynUkJaiyEY+XYNzA7NaoiwACbrLCZb6/tJZjDWZxLCi8CyP5fUFIGKOOql
+AHPig31NMN3R371GL7X7yP6tgDzeuvnjaAViDlJ6o+jIezCTh7NEnkX91Aqg2QipJz+x5bJ+D8sgiELkdYcIbwhrjN0R4UVyoc+dArb
+r5tnKGZ6i+/3ZX1aXi4sTmnbgVgNsEWvYv7tWn/HACTAQxuJw/S8w0sDP7gEKItft5NNkO3wj0ju7v5aIpWOClwDq/Z9ne/moM50hD1Td
+CdbpOhFtyG0JxE7FzMmSaAjy8csN47GsCeZjEoPUfbhya8EdNH36NMITqySp5tumq3xYwd root@localhost.localdomain
+
+把这个加到SSHKEY里，再试下aau的那个编译
+路径：工程【SP/AIU】 -> 右边小头像【Profile Settings】 -> 横栏SSH KEY
+
+
+#################3################   coverity 缺陷修复操作：###################################################
+虚机浏览器登陆172.27.14.113:8085 ；用户名xuebing ；密码  woyao`1`
+1、根据excel表【AIU和ARU分开】中CID在coverity中查找缺陷代码的具体文件和行号
+2、在AIU或ARU代码中进行修改，修改后提交代码
+3、编译新版本：Jenkins --> 5GIII_COVERITY --> 5GIII_AAU_DMBG_NXP_COVERITY 或者 5GIII_ARU_DEVELOP_COVERITY  --> 
+               -> 立即构建 看对应版本号的进度情况   同时注意右边：下级项目COVERITY_ANALYSIS进度，当都执行完毕
+               -> coverity退出登录，重新登录并刷新，查看All in Project,分别查看AIU和ARU的组件进行修复结果确认。
+   
+   
+
+#################### 20180711 jenkins 编译不过解决方法 #####################
+情况一：1、编译出错，但是未有error：时，可能配置出粗：
+         注：
+两个：
+*/DD_5GIII_64BIT_V1
+*/DD_5GIII_64BIT_V1
+四个master：
+*/master
+ssh://git@ci.datangmobile.cn:2022/PL/5GIII_PL_TX.git
+*/master
+Help for feature: Branch Specifier (blank for 'any')
+PL_TX
+ssh://git@ci.datangmobile.cn:2022/PL/5GIII_PL_RX.git
+*/master
+*/master
+Help for feature: Branch Specifier (blank for 'any')
+
+情况二：编译出错，但是未有error：时，eference path does not exist: 30  时，清理下工作空间
+
+
+
+####################### 20180912 新版本编译分支配置方法 ###################################################
+AAU_DMBG_TAG_TEST：
+1、
+AIU                	develop
+GIT_SP_OR_PRIVATE	  SP      【AIU git 使用公共SP库还是私有库	】
+
+PL_COMM	            master
+PL_TX	              master
+PL_RX	              master
+PL_CTRL	            master
+DD_EMB6116	        DD_5GIII_64BIT_V1
+DT_EMB6116	        DD_5GIII_64BIT_V1
+开始构建
+
+2、
+AIU                	EMB6116_5G_GNB_V0.80.00_int
+GIT_SP_OR_PRIVATE	  SP      【AIU git 使用公共SP库还是私有库	】
+
+PL_COMM	            EMB6116_5G_GNB_V0.80.00_int
+PL_TX	              EMB6116_5G_GNB_V0.80.00_int
+PL_RX	              EMB6116_5G_GNB_V0.80.00_int
+PL_CTRL	            EMB6116_5G_GNB_V0.80.00_int
+DD_EMB6116	        EMB6116_5G_GNB_V0.80.00_int
+DT_EMB6116	        EMB6116_5G_GNB_V0.80.00_int
+开始构建
+AIU使用新路径： 
+HTTP：http://ci.datangmobile.cn:2080/SP/AIU.git
+SSH：ssh://git@ci.datangmobile.cn:2022/SP/AIU.git
+
+ARU使用新路径：
+HTTP：http://ci.datangmobile.cn:2080/SP/ARU.git
+SSH：ssh://git@ci.datangmobile.cn:2022/SP/ARU.git
+
+
+5GIII使用怀柔服务器，5GII最新版本已上传。
+请没有登陆过的同事前往以下路径登陆，没有登陆过该GIT服务器无法添加项目成员。
+服务器地址 http://ci.datangmobile.cn:2080/ （请再虚机中登陆）
+
+属组：SP （新软件平台Software Platform）
+项目：5GIII-AAU （ssh://git@ci.datangmobile.cn:2022/SP/5GIII-AAU.git）
+分支：5GIII_AAU_Master  &  5GIII_AAU_Slave
+基线：
+以提供给硬验的最新U标版本为基线。
+5GIII_AAU_Master
+element * CHECKEDOUT
+element -dir * /main/LATEST
+element -file * U_OSPV2_RRUZUEG_2017COMPILE
+element -file * U_RRU_IRLED_20171214
+element -file * U_RRUOM_5G_PATH_BUG
+element -file * U_5GII_LED_TEST
+element -file * U_5GAAU_ALG_V1_08
+element -file * U_DD_M5GII_TST_UPGRADE_VER_I_0
+element -file * TDAU1264B42_M_V1.00.00.00_RRU_001_20171020
+
+5GIII_AAU_Slave
+element * CHECKEDOUT
+element -dir * /main/LATEST
+element -file * U_OSPV2_RRUZUEG_2017COMPILE
+element -file * U_DD_5GLOG
+element -file * U_5GAAU_ALG_V1_08
+element -file * U_DD_S5GII_TST_UPGRADE_VER_I_0
+element -file * TDAU1264B42_S_V1.00.00.00_RRU_001_20171020
+
+
+#################################  单元测试相关：##################################
+cmake:
+安装 Microsoft Visual Studio 2010   【安装和卸载都在setup.exe中，操作自行选择】
+-> 20180627 替换安装为Microsoft Visual Studio 2012
+C:\Program Files\cmake-3.8.0-rc1-win32-x86\bin   加进环境变量里，看附件“单元测试框架搭建简要介绍”
+C:\Program Files\cmake-3.8.0-rc1-win32-x86\bin
+环境变量 -> 系统属性 -> 高级 -> 编辑系统变量：
+		变量名(N)：Path
+		变量值(V):%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;C:\Program Files\Rational\common;C:\Program Files\Rational\ClearCase\bin;C:\Program Files\TortoiseGit\bin;C:\Program Files\cmake-3.8.0-rc1-win32-x86\bin
+
+在D:\git\develop\5G_TDAU5116\third_lib\cpputest\include\CppUTestExt 下：MockSupport.h中mock支持的相关函数
+
+
+在D:\git\AAU\test\unit_test下建立build文件夹（此文件夹不会被git识别，即不会被提交到仓库，同类似:.bak）：
+1、建立power文件夹，并在power里面建立自己对应的单元测试文件：test_rru_power.cpp 和 CMakeLists.txt文件;
+   假如此power_unit_test需要用到其他文件的mocker,则把mocker下对应文件加到CMakeLists.txt中 eg:mocker_cpu.cpp加到CMakeLists.txt中：
+   set(POWER_TEST_SRC ${CURRENT_DIR_SRCS} 
+    ../test_entry.cpp  
+    ../../../src/TDB36A_DD/AAU/drivers/comm/rru_power.c
+	  ../../../test/unit_test/mocker/mocker_cpu.cpp  【最好在自己的分支里mocker自己需求的调用的别的.c文件里的函数】
+    )
+    
+2、在unit_test文件夹下的CMakeLists.txt加入power模块声明；
+3、测试文件里的有的函数调用其他.c文件里的函数，就【例：test_rru_power.cpp】需要mocker对应其他.c文件里的函数【 actualCall 】，供自己的调用函数用使用，
+   在mocker文件夹下建立对应：mocker_power.cpp ,此mocker_power.cpp里面需要mocker 文件rru_power.c里的所调用的函数【例： actualCall 】。
+4、写测试函数时，先写内层函数，在写外层。
+   内层函数：当调用别的.c里的函数时，先mocker【 expectOneCall 】处理，假如被调用函数就是返回了0或者1，则被调用函数可以用ignoreOtherParameters 而忽略
+             参数withParameter，【 expectOneCall 和 actualCall 一一对照，若想在test_rru_cpu_topo.cpp中调用 expectOneCall ，则必须首先在Mocker_rru_gpio.cpp中mocker： actualCall 】
+              mock().expectOneCall("rru_gpio_trans")   <=> actualCall
+                    .ignoreOtherParameters()
+                    .andReturnValue(OSP_OK);
+    
+   外层函数：当调用内层函数时，直接调用内层函数里的    mock().expectOneCall("rru_cpu_dev_get") 【rru_mp2953_temp_read 调用-> rru_power_gpioi2c_read 中包含的所有mock().expectOneCall】
+5、【还不完全确定，待最终验证】单元测试文件中 eg:test_rru_power.cpp 不能 extern 要用到的对应rru_power.c中的宏定义，只能在test_rru_power.cpp中重新定义和rru_power.c同样的宏定义，
+   但是【】可以extern对应rru_power.h中定义的宏定义。
+eg:函数：
+(1、
+OSP_STATUS rru_gpio_iic_pincfg(u8 u8DevId, u8 u8which)
+{
+    u32 u32GpioIicSclId  = 0;
+    u32 u32GpioIicSdaId  = 0;
+    OSP_STATUS ret = OSP_OK;
+
+    switch (u8DevId)
+    {
+        case CRRU_EEPROM:
+        {
+             ret |= GPIO.fn_trans(CRRU_CPU_GPIO3_MODID, 28, &u32GpioIicSclId);
+             ret |= GPIO.fn_trans(CRRU_CPU_GPIO3_MODID, 29, &u32GpioIicSdaId);
+             ret |= GPIO_IIC.fn_init(u32GpioIicSdaId, u32GpioIicSclId);
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    return ret;
+}
+GPIO.fn_trans = &rru_gpio_trans;
+GPIO_IIC.fn_init = &rru_gpio_iic_init;
+
+(2、
+OSP_STATUS rru_cpu_topo_help(void)  【该函数默认返回OK】
+{
+    return OSP_OK;
+}
+
+单元测试：
+方法(1.1：
+被调用函数rru_gpio_trans：有三个参数，前两个入参，后一个为输出
+第一次调用，输入两个入参u8ModuleId【代码中入参为：8】 u8SubPortId【代码中入参为3】
+第二次调用，输入两个入参u8ModuleId【代码中入参为：8】 u8SubPortId【代码中入参为2】
+输出参数根据前两个输入参数得值，由于暂时不知道输出，所以自定义了出参portid = 5；
+ .withOutputParameterReturning("pu32PortId", &portid,4); 得到portid = 5，字节长度为4
+所以在下面CHECK时，检查其等于5
+
+TEST(CPU_TOPO_TEST_CASES, test_rru_gpio_iic_pincfg)
+{
+	u32 portid = 5;
+  mock().expectOneCall("rru_gpio_trans")
+                    .withParameter("u8ModuleId", 8)
+					          .withParameter("u8SubPortId", 3)
+                    .withOutputParameterReturning("pu32PortId", &portid,4);
+	mock().expectOneCall("rru_gpio_trans")
+                    .withParameter("u8ModuleId", 8)
+					          .withParameter("u8SubPortId", 2)
+                    .withOutputParameterReturning("pu32PortId", &portid,4);
+	mock().expectOneCall("rru_gpio_iic_init")
+                    .ignoreOtherParameters();
+                    .andReturnValue(OSP_OK);
+
+	rru_gpio_iic_pincfg(CRRU_I2C_OPT0);
+	CHECK(5 == g_u32GpioIicCurSclId);
+	CHECK(5 == g_u32GpioIicCurSdaId);
+}
+    
+方法(1.2：rru_gpio_iic_pincfg函数中调用的函数都是只需知道其返回值就行，所以可以直接：
+        直接 mock：1、忽略其入参 2、返回OSP_OK  【此单元测试只验了一个分支】
+TEST(CPU_TOPO_TEST_CASES, test_rru_gpio_iic_pincfg)
+{
+    OSP_STATUS ret = OSP_OK;
+    u8 u8DevId = 0;
+
+    u8DevId = CRRU_EEPROM;
+    mock().expectOneCall("rru_gpio_trans")
+                     .ignoreOtherParameters()
+                     .andReturnValue(OSP_OK);
+    mock().expectOneCall("rru_gpio_trans")
+                     .ignoreOtherParameters()
+                     .andReturnValue(OSP_OK);
+     mock().expectOneCall("rru_gpio_trans")
+                     .ignoreOtherParameters()
+                     .andReturnValue(OSP_OK);
+    mock().expectOneCall("rru_gpio_iic_init")
+                     .ignoreOtherParameters()
+                     .andReturnValue(OSP_OK);
+    ret = rru_gpio_iic_pincfg(u8DevId, 0);
+    CHECK(OSP_OK == ret);
+}
+
+(2、
+TEST(CPU_TOPO_TEST_CASES, should_return_ok_when_cpu_topo_help_info_is_ok)
+{
+     OSP_STATUS ret = OSP_OK;
+     ret = rru_cpu_topo_help();
+
+     CHECK(OSP_OK == ret);
+}
+
+在 Mocker_rru_cpu.cpp 文件里 .returnIntValue 返回值类型由函数类型决定，int返回 returnIntValue ，pointer就返回returnPointerValue
+    mock().expectOneCall("rru_gpio_iic_init")
+                     .ignoreOtherParameters()
+                     .andReturnValue(OSP_OK); 【返回值可以是任何要返回的值，eg: .andReturnValue(2)】
+
+6、
+每次建立工程前：清空build文件夹：
+方法1： 
+cmd:dir
+d:
+D:\> cd \git\AAU\test\unit_test\build\
+D:\git\AAU\test\unit_test\build>cmake ..                          【建立工程】
+D:\git\AAU\test\unit_test\build\>cmake --build .                  【编译并生成可执行文件】
+查看对应可执行文件：
+D:\git\AAU\test\unit_test\build\power_unit_test                   【运行单元测试可执行文件】
+
+方法2：
+cmd:
+d:
+D:\> cd \git\AAU\test\unit_test\build\
+D:\git\AAU\test\unit_test\build>cmake ..                             【建立工程】
+D:\git\AAU\test\unit_test\build\>cmake --build .                     【编译并生成可执行文件】
+查看build文件夹：打开aau_unit_test.sln ,在对应项目点击右键 -> 重新生成 可查看编译情况并作修改
+									[此时若出现无法找到头文件：dd_rru_pm.h  ，但是文件夹下又确实存在该头文件：                       ]
+									[eg:D:\git\develop\5G_TDAU5116\src\TDB36A_DD\AAU\producetest\src\dd_rru_pm.c                     ]
+									[   D:\git\develop\5G_TDAU5116\src\TDB36A_DD\AAU\producetest\inc\dd_rru_pm.h                     ]
+									[绝大可能是:                                                                                     ]
+									[D:\git\develop\5G_TDAU5116\custom_cmake_module\find_aau_headfile_dirs.cmake中未添加dd_rru_pm.h的]
+									[路径：D:\git\develop\5G_TDAU5116\src\TDB36A_DD\AAU\producetest\inc\                             ]
+									
+                 此时对应项目下的 Source Files 下出现下列文件:
+                                    mocker_cpu.cpp      【调用的mocker】
+                                    mocker_gpio_iic.cpp 【调用的mocker】
+                                    rru_power.c         【调用的源文件】
+                                    test_entry.cpp      【入口文件】
+                                    test_rru_power.cpp  【单元测试文件】
+在build目录下：power_unit_test.exe 的exe执行文件
+D:\git\AAU\test\unit_test\build\power_unit_test.exe                   【运行单元测试可执行文件】
+
+方法3：
+在\\ldserver下载vs2012版本，并安装 【卸载vs2010,在setup.exe里面有卸载】
+安装成功后：
+cmd:
+在与 ARU 并行目录下建立 aru_build
+D:\git\develop\16a_build>cmake D:\git\develop\5G_TDAU5116\test\unit_test
+每次执行此命令时先清空aru_build目录下所有文件。
+
+D:\git\develop\5G_TDAU5116\build>cmake D:\git\develop\5G_TDAU5116\test\unit_test
+D:\git\develop\5G_TDAU5116\build\power_unit_test.exe                   【运行单元测试可执行文件】
+
+
+在VS2012中打开：查看 aru_build 文件夹：打开 aru_integration_test.sln ,在对应项目点击右键 -> 重新生成 可查看编译情况并作修改
+                 此时对应项目下的 Source Files 下出现下列文件:
+切记把对应mocker文件的路径加进来：
+   set(POWER_TEST_SRC ${CURRENT_DIR_SRCS} 
+    ../test_entry.cpp  
+    ../../../src/TDB36A_DD/AAU/drivers/comm/rru_power.c
+	  ../../../test/unit_test/mocker/mocker_cpu.cpp  【最好在自己的分支里mocker自己需求的调用的别的.c文件里的函数】
+    )
+
+调试：【单元测试出现error时，】
+在工程 rru_procload_unit_test :
+                          mocker_osp.cpp      【调用的mocker】
+                          rru_procload.c      【调用的源文件】
+                          test_entry.cpp      【入口文件】
+                          test_rru_procload.cpp  【单元测试文件】-> 设置断点[把断点设置在要测试的函数] 
+-> rru_procload_unit_test -》右键-> 重新生成 -》 右键-> 调试 -> 启动新实例 -》 F11进入 F10单步运行【要测试的函数内】
+
+6、
+   6.1 在浏览器：Jenkins -> AAU -> AIU_FECATOR_UNIT_TEST -> 配置：
+       -> 构建：Execute shell :Command: 脚本中加入：./power_unit_test -v;\   保存即可!
+       eg:当配置中无#时，最后的\需要带上
+       ./rru_si_unit_test -v;\
+       ./rru_cpu_topo_unit_test -v;\
+       eg:当配置中有#注掉的配置时，配置最后的\要去掉
+       ./rru_si_unit_test -v;  【\ 去掉 】
+       #./rru_cpu_topo_unit_test -v;\
+       
+       
+   6.2 Jenkins -> AAU -> AIU_FECATOR_UNIT_TEST -> 点击右边：Code Coverage 看覆盖率
+
+
+################################# 离线工程 ######################################################
+在\\ldserver下载vs2012版本，并安装 【卸载vs2010,在setup.exe里面有卸载】
+安装成功后：
+cmd:
+在与 ARU 并行目录下建立 aru_build
+D:\git\aru\aru_build> cmake D:\git\aru\ARU\test\integration_test
+每次执行此命令时先清空aru_build目录下所有文件。
+
+在VS2012中打开：查看 aru_build 文件夹：打开 aru_integration_test.sln ,在对应项目点击右键 -> 重新生成 可查看编译情况并作修改
+                 此时对应项目下的 Source Files 下出现下列文件:

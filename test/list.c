@@ -19,6 +19,11 @@ typedef struct Node
 Node* create_node(int data)
 {
 	Node* node = (Node*)malloc(sizeof(Node));
+	if(NULL == node)
+	{
+        printf(" malloc err.\n ");
+	}
+	memset(node,0,sizeof(struct Node));
 	node->data = data;
 	node->next = NULL;
 	return node;
@@ -95,6 +100,28 @@ Node* list_insert(Node* head,int index,int data)//在链表指定位置插入一
 		tmp->next = node;
 	}
 	return head;
+
+}
+
+//尾插法
+void insert_tail(Node* head,Node* new)
+{
+    //第一步  先找到链表中的最后一个节点
+    Node* phead = head;
+    while(NULL != phead->next)
+    {
+        phead = phead->next;
+    }
+    //第二步 将新节点插入到最后
+    phead->next = new;
+
+}
+
+//头插法
+void insert_head(Node* head,Node* new)
+{
+    new->next = head;
+    head = new;
 
 }
 
@@ -259,8 +286,61 @@ void test_list_delete()
 
 }
 
+//尾插法
+int test_insert_tail(void)
+{
+	Node* head = create_node(1);//创建头结点
+    insert_tail(head, create_node(4));
+    insert_tail(head, create_node(2));
+    insert_tail(head, create_node(3));
+    insert_tail(head, create_node(5));
+
+	while(head)
+	{
+		printf("data:%d\n",head->data);
+		head = head->next;
+	}
+	/*
+        data:1
+        data:4
+        data:2
+        data:3
+        data:5
+	*/
+
+}
+
+//头插法
+int test_insert_head(void)
+{
+	Node* head = create_node(1);//创建头结点
+
+    for(int i = 0 ; i < 4 ; i++)
+    {
+        Node* temp = (Node*)malloc(sizeof(Node));
+        temp->data = i+3;
+        temp->next = head;
+        head = temp;
+    }
+
+	while(head)
+	{
+		printf("data:%d\n",head->data);
+		head = head->next;
+	}
+	/*
+        data:6
+        data:5
+        data:4
+        data:3
+        data:1
+	*/
+
+}
+
 void main(void)
 {
+    test_insert_head();
 
 	
 	printf("list:\n");

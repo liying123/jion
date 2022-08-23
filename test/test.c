@@ -19,8 +19,9 @@
 #include <string.h>
 #include <unistd.h>
 #include<stdarg.h>
+#include"list.h"
 
-
+#include <stddef.h>
 
 
 
@@ -51,13 +52,11 @@ struct config_info_st {
 	char ip[32];
 	int install;
 	int mode; /* ZhengJunpu added */
-#ifdef TIP_PORTING
 	int syslog_flag;
 	char ipinfo[15];
 	int portinfo;
 	int valid_days;
 	int switch_mode;// 1 close 0 open (same to server)
-#endif
 };
 
 int func_fun(int n)
@@ -167,39 +166,6 @@ void test_time(void)
 
     printf("local time:%d%02d%02d\n",1900+p->tm_year,1+p->tm_mon,p->tm_mday);
 
-}
-
-#define INT_SWAP(a,b) \
-{                   \
-    int tmp = a;    \
-    a = b;          \
-    b = tmp;        \
-}
-
-int test_define_swap(void)
-{
-    int var_a = 1;
-    int var_b = 2;
-
-    INT_SWAP(var_a, var_b);
-    printf("var_a = %d, var_b = %d\n", var_a, var_b);   // var_a = 2, var_b = 1
-
-    if (1)
-        INT_SWAP(var_a, var_b);
-    printf("var_a = %d, var_b = %d\n", var_a, var_b);   // var_a = 1, var_b = 2
-}
-
-
-#define offsetof1(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#define container_of(ptr, type, member) ({			\
-	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
-	(type *)( (char *)__mptr - offsetof1(type,member) );})
-
-
-void define_function_test(int inde)
-{
-
-    printf("define_function_test:inde=%d\n",inde);
 }
 
 
@@ -2071,6 +2037,40 @@ int pthread_test(void)
 #endif
     pthread_mutex_destroy(&g_mutex_lock_pthread);
 
+/*
+
+root@jion-virtual-machine:/home/jion# ./test11 
+pthread_test 111!
+pthread_test 222!
+pthread_create_test1!111 index1 = 0,index2 = 0
+pthread_create_test1!111 index1 = 1
+pthread_create_test1!111 index1 = 2
+pthread_create_test1!111 index1 = 3
+pthread_create_test1!111 index1 = 4
+pthread_create_test1!111 index1 = 5
+pthread_create_test0 111!
+pthread_create_test2!
+pthread_create_test3!
+pthread_create_test0_chi1 111!
+pthread_create_test0_chi0 111!
+pthread_create_test0_chi1_chi0!
+pthread_create_test0_chi0_chi0!
+pthread_create_test0_chi1_chi1!
+pthread_create_test0_chi0_chi1!
+pthread_create_test1!111 index1 = 6
+pthread_create_test0 222!
+pthread_create_test0_chi1 222!
+pthread_create_test0_chi0 222!
+pthread_create_test1!111 index1 = 7
+pthread_create_test1!111 index1 = 8
+pthread_create_test1!111 index1 = 9
+pthread_create_test1!111 index1 = 10
+
+
+
+*/
+
+
     return 0;
 
 }
@@ -2293,35 +2293,8 @@ void if_else_if_test(void)
     }
 }
 
-int sum(int num_args, ...)
-{
-   int val = 0;
-   va_list ap;
-   int i;
-   va_start(ap, num_args);
-   for(i = 0; i < num_args; i++)
-   {
-        val += va_arg(ap, int);
-        printf("sum:val %d\n",val);
-   }
-   va_end(ap);
-   return val;
-}
 
-int sum_ss(int numt,int num_args, ...)
-{
-   int val = 0;
-   va_list ap;
-   int i;
-   va_start(ap, num_args);
-   for(i = 0; i < num_args; i++)
-   {
-        val += va_arg(ap, int);
-        printf("sum_ss:val %d\n",val);
-   }
-   va_end(ap);
-   return val;
-}
+
 typedef void (job_fn_t)(int state, int error, int argc, void *argv[]);
 int sum_ss_while_job_set(job_fn_t *job_fn, ...)
 {
@@ -2347,6 +2320,35 @@ int sum_ss_while_job_set(job_fn_t *job_fn, ...)
     }
     va_end(ap);
     return 0;
+}
+
+int sum_ss(int numt,int num_args, ...)
+{
+   int val = 0;
+   va_list ap;
+   int i;
+   va_start(ap, num_args);
+   for(i = 0; i < num_args; i++)
+   {
+        val += va_arg(ap, int);
+        printf("sum_ss:val %d\n",val);
+   }
+   va_end(ap);
+   return val;
+}
+int sum(int num_args, ...)
+{
+   int val = 0;
+   va_list ap;
+   int i;
+   va_start(ap, num_args);
+   for(i = 0; i < num_args; i++)
+   {
+        val += va_arg(ap, int);
+        printf("sum:val %d\n",val);
+   }
+   va_end(ap);
+   return val;
 }
 
 int va_start_test(void)
@@ -2498,9 +2500,9 @@ void sscanf_test(void)
     char line[1024] = {'\0'};
     char soft_installed_version[1024] = {'\0'};
     FILE *fp = NULL;
-    const char *soft_name = "tipterminalfd";
+    const char *soft_name = "zip";
 
-    snprintf(tmpcmd, sizeof(tmpcmd), "grep -wrn \"%s\" %s",soft_name, "sys_soft_installed_sum.txt");
+    snprintf(tmpcmd, sizeof(tmpcmd), "grep -wrn \"%s\" \"%s\" ",soft_name, "sys_soft_installed_sum.txt");
     printf("sscanf_test: tmpcmd=%s\n",tmpcmd);
     fp = popen(tmpcmd, "r");
     if (fp == NULL) {
@@ -2524,6 +2526,7 @@ void sscanf_test(void)
             printf("sscanf_test111: key=%s,val=%s.\n", key, val);
             continue;
         }
+        printf("sscanf_test111222: key=%s,val=%s.\n", key, val);
     }
     printf("sscanf_test222: key=%s,val=%s.\n", key, val);
 
@@ -2533,6 +2536,15 @@ void sscanf_test(void)
 
 }
 
+/*
+为什么两个进程的fpid不同呢，这与fork函数的特性有关。fork调用的一个奇妙之处就是它仅仅被调用一次，却能够返回两次，它可能有三�
+�不同的返回值：
+    1）在父进程中，fork返回新创建子进程的进程ID；
+    2）在子进程中，fork返回0；
+    3）如果出现错误，fork返回一个负值；
+在fork函数执行完毕后，如果创建新进程成功，则出现两个进程，一个是子进程，一个是父进程。在子进程中，fork函数返回0，在父进程�
+�，fork返回新创建子进程的进程ID。我们可以通过fork返回的值来判断当前进程是子进程还是父进程。
+*/
 int fork_test(void)
 {
     pid_t fpid; //fpid表示fork函数得返回值
@@ -2923,7 +2935,15 @@ int rpm_softinfo_parse(const char *filename, char *pkg_name, char *ver_rels, cha
     char cmd[1024] = {'\0'};
     char key[64] = {'\0'};
     char val[256] = {'\0'};
-
+    
+    if ((NULL == filename) || (NULL == pkg_name) || (NULL == ver_rels) || (NULL == pkg_arch)) {
+        memset(err_msg, 0, sizeof(err_msg));
+        snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] input error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__);
+        system(err_msg);
+        return -1;
+    }
+    printf("rpm_softinfo_parse1111:%s,%p,%p,%s\n",filename,pkg_name,ver_rels,pkg_arch);
+    
     snprintf(tmpcmd, sizeof(tmpcmd), "export LANG=zh_CN.UTF-8;/bin/rpm -qi %s", filename);
 
     fp_softlist = popen(tmpcmd, "r");
@@ -2989,7 +3009,8 @@ int dpkg_softinfo_parse(const char *filename, char *pkg_name, char *pkg_ver, cha
     char key[64] = {'\0'};
     char val[256] = {'\0'};
 
-    snprintf(tmpcmd, sizeof(tmpcmd), "export LANG=zh_CN.UTF-8;dpkg -s '%s' ", filename);
+    snprintf(tmpcmd, sizeof(tmpcmd), "export LANG=zh_CN.UTF-8;dpkg -s '%s'", filename);
+    printf("dpkg_softinfo_parse:tmpcmd=[%s],filename=[%s]\n",tmpcmd,filename);
 
     fp_softlist = popen(tmpcmd, "r");
     if (NULL == fp_softlist) {
@@ -3123,34 +3144,27 @@ ps_node get_sys_save_softlist(char *filename, int *count)
         memcpy(softbuf,line,strlen(line) - 1);
         
         printf("get_sys_save_softlist: fgets line=[%s]len=%d,softbuf=[%s]len=%d\n",line,strlen(line),softbuf,strlen(softbuf));
-
-#if 0
-        /* '_' in the head means the soft have been replaced */
-        if ('_' == line[0]) {
-            continue;
-        }
-#endif
-
         if (1 == os_flag) {
             /*
                 libcroco-0.6.12-4.nfs.x86_64
                 qt5-rpm-macros-5.11.1-2.nfs.noarch
-                
                 gpg-pubkey-ec551f03-53619141
                 gpg-pubkey-b25e7f66-5dad5bcf
                 vid.stab-1.1.0-9.20180529git38ecbaf.ky10.sw_64
+                basesystem-12-1.ky10.noarch
+                qt5-qdbusviewer-5.11.1-4.ky10.aarch64
             */
-            
-            if(stringtmpb = strchr(softbuf,'.'))
+            if(stringtmpc = strrchr(softbuf,'.'))
             {
-                memcpy(stringtmpname,softbuf,strlen(softbuf) - strlen(stringtmpb));
-                if(stringtmpa = strrchr(stringtmpname,'-'))
+                memcpy(pkg_arch,stringtmpc + 1,strlen(stringtmpc) - 1);
+                
+                if(stringtmp = strrchr(softbuf,'-'))
                 {
-                    memcpy(pkg_name,stringtmpname,strlen(stringtmpname) - strlen(stringtmpa));
-                    if(stringtmpc = strrchr(softbuf,'.'))
+                    memcpy(stringtmpname,softbuf,strlen(softbuf) - strlen(stringtmp));
+                    if(stringtmpa = strrchr(stringtmpname,'-'))
                     {
-                        memcpy(pkg_arch,stringtmpc + 1,strlen(stringtmpc) - 1);
-                        memcpy(ver_rels,softbuf + strlen(pkg_name) + 1,strlen(softbuf) - strlen(pkg_name)- strlen(pkg_arch) - 2);
+                        memcpy(pkg_name,softbuf,strlen(softbuf) - strlen(stringtmp) - strlen(stringtmpa));
+                        memcpy(ver_rels,softbuf + strlen(pkg_name) + 1,strlen(softbuf) - strlen(pkg_name) - strlen(pkg_arch) - 2 );
                     }
                     else
                     {
@@ -3164,6 +3178,7 @@ ps_node get_sys_save_softlist(char *filename, int *count)
             }
             else
             {
+                printf("get_sys_save_softlist:N '.'!!!!!!!!!!\n");
                 rpm_softinfo_parse(softbuf,pkg_name,ver_rels,pkg_arch);
             }
             
@@ -3205,6 +3220,10 @@ opsfd_err:
             /*
                 ziptorpmdeb_1.2_all
                 zlib1g:amd64_1:1.2.8.dfsg-5+1nfs3_amd64
+                samba_2:4.5.8+dfsg-2+1cdos1_amd64
+                sbsigntool_0.6-3.2+0rb1_amd64
+                sdkjfveinaqdl_3.0.0.4_amd64
+                secureboot-db_1.1_amd64
             */
             
             if(stringtmpb = strchr(softbuf,'_'))
@@ -3227,6 +3246,7 @@ opsfd_err:
             }
             else
             {
+                printf("get_sys_save_softlist:N '_'!!!!!!!!!!\n");
                 dpkg_softinfo_parse(softbuf,pkg_name,pkg_ver,pkg_arch);
             }
             
@@ -3282,6 +3302,469 @@ opfd_err:
     return phead;
 }
 
+void insert_tail(ps_node head,ps_node new)
+{
+    //第一步  先找到链表中的最后一个节点
+    ps_node phead = head;
+    while(NULL != phead->pnext)
+    {
+        phead = phead->pnext;
+    }
+    //第二步 将新节点插入到最后
+    phead->pnext = new;
+
+}
+
+ps_node get_sys_save_softlist1(char *filename, int *count)
+{
+    int add_count = 0;
+    ps_node phead = NULL;
+    FILE *fp = NULL;
+    char line[512] = {'\0'};
+    char softbuf[256] = {'\0'};
+
+    char pkg_name[256] = {0};
+    char pkg_ver[64] = {0};
+    char pkg_arch[64] = {0};
+    char ver_rels[128] = {0};
+    ps_node ptemp = NULL;
+    char err_msg[512] = { 0 };
+
+    char *stringtmp = NULL;
+    char *stringtmpa = NULL;
+    char *stringtmpb = NULL;
+    char *stringtmpc = NULL;
+    char stringtmpname[256] = {'\0'};
+    char os_flag = 0;
+
+    char tipterminal_name[64] = {0};
+    if(0 != get_tipterminal_name_string(tipterminal_name, 63)){
+        memcpy(tipterminal_name, "tipterminal", 11);
+    }
+
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        memset(err_msg, 0, sizeof(err_msg));
+        snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] fopen %s error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__, filename);
+        system(err_msg);
+        return phead;
+    }
+    
+    if (OS_PACK_RPM == ca_get_local_os_pack())
+    {
+        os_flag = 1;
+    }
+    else if (OS_PACK_DPKG == ca_get_local_os_pack())
+    {
+        os_flag = 2;
+    }    
+
+    while (!feof(fp)) {
+        memset(line, 0, sizeof(line));
+        memset(pkg_name, 0, sizeof(pkg_name));
+        memset(pkg_ver, 0, sizeof(pkg_ver));
+        memset(pkg_arch, 0, sizeof(pkg_arch));
+        memset(ver_rels, 0, sizeof(ver_rels));
+        memset(softbuf, 0, sizeof(softbuf));
+        memset(stringtmpname, 0, sizeof(stringtmpname));
+
+        if (fgets(line, sizeof(line), fp) == NULL)
+            break;
+        memcpy(softbuf,line,strlen(line) - 1);
+
+ops_err:
+        if (1 == os_flag) 
+        {
+            if(stringtmpc = strrchr(softbuf,'.'))
+            {
+                memcpy(pkg_arch,stringtmpc + 1,strlen(stringtmpc) - 1);
+                if(stringtmp = strrchr(softbuf,'-'))
+                {
+                    memcpy(stringtmpname,softbuf,strlen(softbuf) - strlen(stringtmp));
+                    if(stringtmpa = strrchr(stringtmpname,'-'))
+                    {
+                        memcpy(pkg_name,softbuf,strlen(softbuf) - strlen(stringtmp) - strlen(stringtmpa));
+                        memcpy(ver_rels,softbuf + strlen(pkg_name) + 1,strlen(softbuf) - strlen(pkg_name) - strlen(pkg_arch) - 2 );
+                    }
+                    else
+                    {
+                        rpm_softinfo_parse(softbuf,pkg_name,ver_rels,pkg_arch);
+                    }
+                }
+                else
+                {
+                    rpm_softinfo_parse(softbuf,pkg_name,ver_rels,pkg_arch);
+                }
+            }
+            else
+            {
+                rpm_softinfo_parse(softbuf,pkg_name,ver_rels,pkg_arch);
+            }
+
+            if(0 == check_is_tip_manage_soft(pkg_name, ver_rels, pkg_arch, tipterminal_name)){
+                continue;
+            }else{
+                ptemp = (ps_node)malloc(sizeof(struct sys_softlist_node));
+                if (NULL == ptemp) {
+                    memset(err_msg, 0, sizeof(err_msg));
+                    snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] malloc error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__);
+                    system(err_msg);
+                    goto ops_err;
+                }
+                memset(ptemp, 0, sizeof(struct sys_softlist_node));
+                if (0 == add_count) {
+                    phead = ptemp;
+                } else {
+                    ptemp->pnext = phead->pnext;
+                    phead->pnext = ptemp;
+                }
+                strncpy(ptemp->name, pkg_name, sizeof(ptemp->name));
+                strncpy(ptemp->verinfo, ver_rels, sizeof(ptemp->verinfo));
+                strncpy(ptemp->softarch, pkg_arch, sizeof(ptemp->softarch));
+                add_count++;
+            }
+        }
+
+        if (2 == os_flag) 
+        {            
+            if(stringtmpb = strchr(softbuf,'_'))
+            {
+                memcpy(stringtmpname,softbuf,strlen(softbuf) - strlen(stringtmpb));
+                if (stringtmp = strchr(stringtmpname,':'))
+                {
+                    memcpy(pkg_name,stringtmpname,strlen(stringtmpname) - strlen(stringtmp));
+                }
+                else
+                {
+                    memcpy(pkg_name,stringtmpname,strlen(stringtmpname));
+                }              
+                stringtmpc = strrchr(softbuf,'_');
+                memcpy(pkg_arch,stringtmpc + 1,strlen(stringtmpc) - 1);
+                memcpy(pkg_ver,stringtmpb + 1,strlen(stringtmpb) - strlen(stringtmpc) - 1);
+            }
+            else
+            {
+                continue;
+            }
+
+            if(0 == check_is_tip_manage_soft(pkg_name, pkg_ver, pkg_arch, tipterminal_name)){
+                continue;
+            }else{
+                ptemp = (ps_node)malloc(sizeof(struct sys_softlist_node));
+                if (NULL == ptemp) {
+                    memset(err_msg, 0, sizeof(err_msg));
+                    snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] malloc error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__);
+                    system(err_msg);
+                    goto ops_err;
+                }
+                memset(ptemp, 0, sizeof(struct sys_softlist_node));
+                if (0 == add_count) {
+                    phead = ptemp;
+                    printf("111 add_count=%d\n",add_count);
+                } else {
+                    //方法一 插到后的头插法
+                    //ptemp->pnext = phead->pnext;
+                    //phead->pnext = ptemp;
+                    /*                    
+                        accountsservice_0.6.43-1.rb2_amd64
+                        tasksel_3.39-0.rb1_all
+                        upower_0.99.4-4.rb2_amd64
+                        zenity-common_3.22.0.1+1cdos1_all
+                        
+                        pall_softlist_test:ptemp->name:[accountsservice];verinfo:[0.6.43-1.rb2];softarch:[amd64]
+                        pall_softlist_test:ptemp->name:[zenity-common];verinfo:[3.22.0.1+1cdos1];softarch:[all]
+                        pall_softlist_test:ptemp->name:[upower];verinfo:[0.99.4-4.rb2];softarch:[amd64]
+                        pall_softlist_test:ptemp->name:[tasksel];verinfo:[3.39-0.rb1];softarch:[all]
+                    */
+                    //方法二 头插法
+                    //ptemp->pnext = phead;
+                    //phead = ptemp;
+                    /*
+                        pall_softlist_test:ptemp->name:[zenity-common];verinfo:[3.22.0.1+1cdos1];softarch:[all]
+                        pall_softlist_test:ptemp->name:[upower];verinfo:[0.99.4-4.rb2];softarch:[amd64]
+                        pall_softlist_test:ptemp->name:[tasksel];verinfo:[3.39-0.rb1];softarch:[all]
+                        pall_softlist_test:ptemp->name:[accountsservice];verinfo:[0.6.43-1.rb2];softarch:[amd64]
+                    */
+
+                    //方法三 尾插法  一定使用phead1做中间转换，否则无法记录到所有链表，导致部分链表数据丢失
+                       //while(NULL!=phead->pnext) 此种处理只能记录最后两个  upower zenity-common
+                       //{
+                       //   phead = phead->pnext;
+                       //}
+                       //   phead->pnext = ptemp;
+                       
+                    //正确为： insert_tail(phead,ptemp);
+                    ps_node phead1 = phead;
+                    while(NULL != phead1->pnext)
+                    {
+                        phead1 = phead1->pnext;
+                    }
+                    phead1->pnext = ptemp;
+                    /*
+                        pall_softlist_test:ptemp->name:[accountsservice];verinfo:[0.6.43-1.rb2];softarch:[amd64]
+                        pall_softlist_test:ptemp->name:[tasksel];verinfo:[3.39-0.rb1];softarch:[all]
+                        pall_softlist_test:ptemp->name:[upower];verinfo:[0.99.4-4.rb2];softarch:[amd64]
+                        pall_softlist_test:ptemp->name:[zenity-common];verinfo:[3.22.0.1+1cdos1];softarch:[all]
+
+                    */
+                    
+                }
+                strncpy(ptemp->name, pkg_name, sizeof(ptemp->name));
+                strncpy(ptemp->verinfo, pkg_ver, sizeof(ptemp->verinfo));
+                strncpy(ptemp->softarch, pkg_arch, sizeof(ptemp->softarch));
+                printf("444 ptemp->name=%s\n",ptemp->name);
+                add_count++;
+            }
+        }
+    }
+
+    if(fp) {
+        fclose(fp);
+        fp = NULL;
+    }
+    
+    pall_softlist->syscount = add_count;
+    return phead;
+}
+
+ps_node get_sys_save_softlist_back(char *filename, int *count)
+{
+    int ret = -1;
+    int add_count = 0;
+    ps_node phead = NULL;
+    FILE *fp = NULL;
+    char line[512] = {'\0'};
+    char soft_name[256] = {'\0'};
+
+    char pkg_name[256] = {0};
+    char pkg_ver[64] = {0};
+    char pkg_release[64] = {0};
+    char pkg_arch[64] = {0};
+    char ver_rels[128] = {0};
+
+    FILE *sfp = NULL;
+    FILE *sdfp = NULL;
+    char sline[512] = {'\0'};
+    char cmd[1024] = {'\0'};
+    char key[64] = {'\0'};
+    char val[256] = {'\0'};
+    ps_node ptemp = NULL;
+    char err_msg[512] = { 0 };
+
+    char tipterminal_name[64] = {0};
+    if(0 != get_tipterminal_name_string(tipterminal_name, 63)){
+        memcpy(tipterminal_name, "tipterminal", 11);
+    }
+
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        memset(err_msg, 0, sizeof(err_msg));
+        snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] fopen %s error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__, filename);
+        system(err_msg);
+
+        return phead;
+    }
+
+    while (!feof(fp)) {
+        memset(line, 0, sizeof(line));
+        memset(cmd, 0, sizeof(cmd));
+        memset(soft_name, 0, sizeof(soft_name));
+        memset(pkg_name, 0, sizeof(pkg_name));
+        memset(pkg_ver, 0, sizeof(pkg_ver));
+        memset(pkg_release, 0, sizeof(pkg_release));
+        memset(pkg_arch, 0, sizeof(pkg_arch));
+        memset(ver_rels, 0, sizeof(ver_rels));
+
+        if (fgets(line, sizeof(line), fp) == NULL)
+            break;
+
+#if 0
+        /* '_' in the head means the soft have been replaced */
+        if ('_' == line[0]) {
+            continue;
+        }
+#endif
+
+        if (OS_PACK_RPM == ca_get_local_os_pack()) {
+            //ret = soft_softlist_line_get_rpm_name(line, soft_name);
+            //if (-1 == ret) {
+            //	continue;
+            //}
+            char tmp_names[512] = {'\0'};
+            strncpy(tmp_names, line, strlen(line) - 1);
+            snprintf(cmd, sizeof(cmd), "export LANG=zh_CN.UTF-8;rpm -qi '%s' ", tmp_names);
+            sfp = popen(cmd, "r");
+            if (sfp == NULL) {
+                memset(err_msg, 0, sizeof(err_msg));
+                snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] popen error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__);
+                system(err_msg);
+
+                goto opfd_err;
+            }
+
+            while (!feof(sfp)) {
+                memset(sline, 0, sizeof(sline));
+                memset(key, 0, sizeof(key));
+                memset(val, 0, sizeof(val));
+        
+                if (fgets(sline, sizeof(sline), sfp) == NULL)
+                    break;
+
+                if (sscanf(sline, "%[^:]: %s", key, val) != 2)
+                    continue;
+
+                if (strncasecmp(key, "Name", sizeof("Name") - 1) == 0) {
+                    strncpy(pkg_name, val, sizeof(pkg_name));
+                } 
+                if (strncasecmp(key, "Version", sizeof("Version") - 1) == 0) {
+                    strncpy(pkg_ver, val, sizeof(pkg_ver));
+                }
+                if (strncasecmp(key, "Release", sizeof("Release") - 1) == 0) {
+                    strncpy(pkg_release, val, sizeof(pkg_release));
+                }
+
+                if (strncasecmp(key, "Architecture", sizeof("Architecture") - 1) == 0) {
+                    strncpy(pkg_arch, val, sizeof(pkg_arch));
+                    break;
+                }
+            }
+            snprintf(ver_rels, sizeof(ver_rels), "%s-%s", pkg_ver, pkg_release);
+            if(0 == check_is_tip_manage_soft(pkg_name, ver_rels, pkg_arch, tipterminal_name)){
+                if (sfp != NULL) 
+                {
+                    pclose(sfp);
+                    sfp = NULL;
+                }
+                continue;
+            }else{
+                ptemp = (ps_node)malloc(sizeof(struct sys_softlist_node));
+                if (NULL == ptemp) {
+                    memset(err_msg, 0, sizeof(err_msg));
+                    snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] malloc error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__);
+                    system(err_msg);
+                    goto opsfd_err;
+                }
+                memset(ptemp, 0, sizeof(struct sys_softlist_node));
+                if (0 == add_count) {
+                    phead = ptemp;
+                } else {
+                    ptemp->pnext = phead->pnext;
+                    phead->pnext = ptemp;
+                }
+                strncpy(ptemp->name, pkg_name, sizeof(ptemp->name));
+                strncpy(ptemp->verinfo, ver_rels, sizeof(ptemp->verinfo));
+                strncpy(ptemp->softarch, pkg_arch, sizeof(ptemp->softarch));
+                add_count++;
+            }
+        }
+
+opsfd_err:
+        if (sfp != NULL) {
+            pclose(sfp);
+            sfp = NULL;
+        }
+
+        if (OS_PACK_DPKG == ca_get_local_os_pack()) {
+            char tmp_name[128] = {'\0'};
+            if (0 != strncmp(line, "ii ", 3)) {
+                continue;
+            }
+            strncpy(tmp_name, &(line[4]), 127);
+            char *pt = NULL;
+            pt = strstr(tmp_name, " ");
+            if (NULL != pt) {
+                *pt = '\0';
+            } else {
+                continue;
+            }
+
+            memset(pkg_name, 0, sizeof(pkg_name));
+            memset(pkg_ver, 0, sizeof(pkg_ver));
+            memset(pkg_arch, 0, sizeof(pkg_arch));
+            snprintf(cmd, sizeof(cmd), "export LANG=zh_CN.UTF-8;dpkg -s '%s' ", tmp_name);
+            sdfp = popen(cmd, "r");
+            if (sdfp == NULL) {
+                memset(err_msg, 0, sizeof(err_msg));
+                snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] popen error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__);
+                system(err_msg);
+
+                goto opfd_err;
+            }
+
+            while (!feof(sdfp)) {
+                memset(sline, 0, sizeof(sline));
+                memset(key, 0, sizeof(key));
+                memset(val, 0, sizeof(val));
+
+                if (fgets(sline, sizeof(sline), sdfp) == NULL) {
+                    break;
+                }
+
+                if (sscanf(sline, "%[^:]: %s", key, val) != 2) {
+                    continue;
+                }
+
+                if (strncasecmp(key, "Package", sizeof("Package") - 1) == 0) {
+                    strncpy(pkg_name, val, sizeof(pkg_name));
+                }
+
+                if (strncasecmp(key, "Version", sizeof("Version") - 1) == 0) {
+                    strncpy(pkg_ver, val, sizeof(pkg_ver));
+                }
+
+                if (strncasecmp(key, "Architecture", sizeof("Architecture") - 1) == 0) {
+                    strncpy(pkg_arch, val, sizeof(pkg_arch));
+                }
+            }
+	    
+            if(0 == check_is_tip_manage_soft(pkg_name, pkg_ver, pkg_arch, tipterminal_name)){
+                if (sdfp != NULL) 
+                {
+                    pclose(sdfp);
+                    sdfp = NULL;
+                }
+                continue;
+            }else{
+                ptemp = (ps_node)malloc(sizeof(struct sys_softlist_node));
+                if (NULL == ptemp) {
+                    memset(err_msg, 0, sizeof(err_msg));
+                    snprintf(err_msg, sizeof(err_msg), "echo \"%ld [%s:%d] malloc error.\" >> /opt/softmanager/tipterminal/var/appif.log ", time(NULL), __func__, __LINE__);
+                    system(err_msg);
+                    if (sdfp != NULL) {
+                        pclose(sdfp);
+                        sdfp = NULL;
+                    }
+                    goto opsfd_err;
+                }
+                memset(ptemp, 0, sizeof(struct sys_softlist_node));
+                if (0 == add_count) {
+                    phead = ptemp;
+                } else {
+                    ptemp->pnext = phead->pnext;
+                    phead->pnext = ptemp;
+                }
+                strncpy(ptemp->name, pkg_name, sizeof(ptemp->name));
+                strncpy(ptemp->verinfo, pkg_ver, sizeof(ptemp->verinfo));
+                strncpy(ptemp->softarch, pkg_arch, sizeof(ptemp->softarch));
+                add_count++;
+            }
+
+            if (sdfp != NULL) {
+                pclose(sdfp);
+                sdfp = NULL;
+            }
+        }
+    }
+
+opfd_err:
+    if(fp) {
+        fclose(fp);
+        fp = NULL;
+    }
+    pall_softlist->syscount = add_count;
+    return phead;
+}
+
 void softlist_get_test()
 {
     char err_msg[512] = { 0 };
@@ -3307,17 +3790,22 @@ int init_all_softlist_info_test(void)
     int tip_soft_num = 0;
     char os_conf[64] = {'\0'};
     char err_msg[512] = { 0 };
+    
+    if (OS_PACK_RPM == ca_get_local_os_pack()) {
+        //rpm_softlist_generate();
+    } else if (OS_PACK_DPKG == ca_get_local_os_pack()) {
+        //dpkg_softlist_generate();
+    }
 
     /* 首先执行此函数进行动态内存申请 */
     softlist_get_test();
 
-    pall_softlist->psyssoftlist = get_sys_save_softlist(softlist_temp_file, &(pall_softlist->syscount));
+    pall_softlist->psyssoftlist = get_sys_save_softlist1(softlist_temp_file, &(pall_softlist->syscount));
     if (NULL == pall_softlist->psyssoftlist) {
         return -1;
     }
     strcpy(pall_softlist->os, "testsys");
     
-    printf("\npall_softlist_test:pall_softlist->os=%s,pall_softlist->syscount:%d\n",pall_softlist->os,pall_softlist->syscount);
     ps_node ptemp = NULL;
     if (NULL != pall_softlist) 
     {
@@ -3325,12 +3813,11 @@ int init_all_softlist_info_test(void)
         {
             for (ptemp = pall_softlist->psyssoftlist; ptemp != NULL; ptemp = ptemp->pnext) 
             {
-                printf("pall_softlist_test:ptemp->name:%s\n",ptemp->name);
-                printf("pall_softlist_test:ptemp->verinfo:%s\n",ptemp->verinfo);
-                printf("pall_softlist_test:ptemp->softarch:%s\n\n",ptemp->softarch);
+                printf("pall_softlist_test:ptemp->name:[%s];verinfo:[%s];softarch:[%s]\n",ptemp->name,ptemp->verinfo,ptemp->softarch);
             }
         }
     }
+    printf("\npall_softlist_test:pall_softlist->os=%s,pall_softlist->syscount:%d\n",pall_softlist->os,pall_softlist->syscount);
 
     return 0;
 }
@@ -3909,24 +4396,2905 @@ void audit_home_page_callback_test(void)
 
 }
 
+void index_function_test(int inde)
+{
+
+    printf("index_function_test:inde=%d\n",inde);
+}
+
+
+
+typedef struct rpmts_s * rpmts;
+typedef struct rpmop_s * rpmop;
+
+struct rpmop_s {
+    int			count;	/*!< Number of operations. */
+    int		bytes;	/*!< Number of bytes transferred. */
+    int		usecs;	/*!< Number of ticks. */
+};
+
+struct rpmts_s {
+
+    struct rpmop_s ops[10];
+    int min_writes;             /*!< macro minimize_writes used */
+};
+
+rpmop rpmtsOp(rpmts ts, int opx)
+{
+    rpmop op = NULL;
+    
+    printf("rpmtsOp:opx=%d,op=%p 111,ts->min_writes=%d\n",opx,op,ts->min_writes);
+
+    if (ts != NULL && opx >= 0 && opx < 10)
+	op = ts->ops + opx;
+    ts->min_writes = 5;
+    printf("rpmtsOp:opx=%d,op=%p 111,ts->min_writes=%d\n",opx,op,ts->min_writes);
+    return op;
+}
+int rpmswEnter(rpmop op, ssize_t rc)
+{
+    if (op == NULL)
+	return 0;
+    printf("rpmswEnter:op=%p,rc=%d 111\n",op,rc);
+
+    op->count++;
+    if (rc < 0) {
+	op->bytes = 0;
+	op->usecs = 0;
+    }
+    printf("rpmswEnter:op=%p,rc=%d 222\n",op,rc);
+
+    return 0;
+}
+
+void function_get_function_nest(void)
+{
+    rpmts ts;
+    ts = malloc(sizeof(*ts));
+    memset(&ts->ops, 0, sizeof(ts->ops));
+    ts->min_writes = 1;
+    
+    printf("\nfunction_get_function_nest:111 ts=%p,ts->min_writes=%d\n",ts,ts->min_writes);
+    (void) rpmswEnter(rpmtsOp(ts, 1), -1);
+    printf("function_get_function_nest:222 ts=%p,ts->min_writes=%d\n",ts,ts->min_writes);
+
+/*
+    function_get_function_nest:111 ts=0x55c865e54420,ts->min_writes=1
+    rpmtsOp:opx=1,op=(nil) 111,ts->min_writes=1
+    rpmtsOp:opx=1,op=0x55c865e5442c 111,ts->min_writes=5
+    rpmswEnter:op=0x55c865e5442c,rc=-1 111
+    rpmswEnter:op=0x55c865e5442c,rc=-1 222
+    function_get_function_nest:222 ts=0x55c865e54420,ts->min_writes=5
+*/
+
+}
+
+
+/* Transaction set elements information */
+typedef struct tsMembers_s {
+    int orderCount;		/*!< No. of transaction elements. */
+    int orderAlloced;		/*!< No. of allocated transaction elements. */
+    int delta;			/*!< Delta for reallocation. */
+} * tsMembers;
+
+struct rpmts_s1 {
+    int mode;
+    tsMembers members;		/*!< Transaction set member info (order etc) */
+
+};
+
+typedef struct rpmts_s1 * rpmts1;
+
+tsMembers rpmtsMembers(rpmts1 ts)
+{
+    return (ts != NULL) ? ts->members : NULL;
+}
+
+/* 两个地址变量的地址赋值，可通过函数形式进行地址赋值 */
+static int addPackage(rpmts1 ts)
+{
+    tsMembers tsmem = rpmtsMembers(ts);
+    
+    printf("addPackage:111 tsmem->orderCount=%d\n",tsmem->orderCount);
+    tsmem->orderCount++;
+    printf("addPackage:222 tsmem->orderCount=%d\n",tsmem->orderCount);
+
+}
+int rpmtsAddInstallElement_test(void)
+{
+    rpmts1 ts;
+    ts = malloc(sizeof(*ts));
+    ts->mode = 1;
+    
+    tsMembers tsmem;
+    tsmem = malloc(sizeof(*tsmem));
+    tsmem->orderCount = 1;
+    
+    ts->members = tsmem;
+    printf("rpmtsAddInstallElement_test:111 ts->members->orderCount=%d\n",ts->members->orderCount);
+    addPackage(ts);
+    printf("rpmtsAddInstallElement_test:222 ts->members->orderCount=%d\n",ts->members->orderCount);
+
+    free(ts);
+    free(tsmem);
+
+/*
+    rpmtsAddInstallElement_test:111 ts->members->orderCount=1
+    addPackage:111 tsmem->orderCount=1
+    addPackage:222 tsmem->orderCount=2
+    rpmtsAddInstallElement_test:222 ts->members->orderCount=2
+*/
+    
+    return 0;
+}
+
+typedef enum rpmElementType_e {
+    TR_ADDED		= (1 << 0),	/*!< Package will be installed. */
+    TR_REMOVED		= (1 << 1),	/*!< Package will be removed. */
+    TR_RPMDB		= (1 << 2),	/*!< Package from the rpmdb. */
+} rpmElementType;
+
+void move_test(int goal)
+{
+    int flag = 0;
+    flag--;
+    
+    printf("move_test:flag=%d\n",flag);
+    printf("move_test:goal=%d\n",goal);
+    int scriptstage = (goal != TR_ADDED && goal != TR_REMOVED);
+    printf("move_test:scriptstage=%d\n\n",scriptstage);
+
+    /*
+        move_test(1<<0);
+        move_test(1<<1);
+        move_test(1<<2);
+        执行：
+        move_test:flag=-1
+        move_test:goal=1
+        move_test:scriptstage=0
+
+        move_test:flag=-1
+        move_test:goal=2
+        move_test:scriptstage=0
+
+        move_test:flag=-1
+        move_test:goal=4
+        move_test:scriptstage=1
+
+    */
+
+
+}
+
+#define N_(Text) Text
+
+struct poptOption {
+    const char * longName;	/*!< may be NULL */
+    char shortName;		/*!< may be NUL */
+    unsigned int argInfo;
+    void * arg;			/*!< depends on argInfo */
+    int val;			/*!< 0 means don't return, just update flag */
+    const char * descrip;	/*!< description for autohelp -- may be NULL */
+    const char * argDescrip;	/*!< argument description for autohelp */
+};
+typedef struct poptOption * poptOption;
+
+#define POPT_ARG_INCLUDE_TABLE	 4U	/*!< arg points to table */
+#define POPT_ARG_CALLBACK	 5U	/*!< table-wide callback... must be */
+#define POPT_ARGFLAG_DOC_HIDDEN 0x40000000U  /*!< don't show in help/usage */
+#define POPT_CBFLAG_INC_DATA	0x20000000U  /*!< use data from the include line,
+					       not the subtable */
+#define POPT_CBFLAG_SKIPOPTION	0x10000000U  /*!< don't callback with option */
+#define POPT_CBFLAG_CONTINUE	0x08000000U  /*!< continue callbacks with option */
+#define POPT_ARG_VAL		 7U	   /*!< arg should take value val */
+#define	POPT_ARGFLAG_OR		0x08000000U   /*!< arg will be or'ed */
+
+#define	POPT_BIT_SET	(POPT_ARG_VAL|POPT_ARGFLAG_OR)
+
+struct rpmInstallArguments_s {
+    int transFlags;
+    int probFilter;
+    int installInterfaceFlags;
+    int numRelocations;
+};
+struct rpmInstallArguments_s rpmIArgs = {
+    0,			/* transFlags */
+    0,			/* probFilter */
+    0,			/* installInterfaceFlags */
+    0,			/* numRelocations */
+};
+typedef void (*poptCallbackType) (void);
+
+typedef union poptArg_u {
+    void * ptr;
+    int * intp;
+    short * shortp;
+    long * longp;
+    long long * longlongp;
+    float * floatp;
+    double * doublep;
+    const char ** argv;
+    poptCallbackType cb;
+    poptOption opt;
+} poptArg;
+
+#define POPT_ARG_MASK		0x000000FFU
+unsigned int _poptArgMask = POPT_ARG_MASK;
+
+#define	poptArgType(_opt)	((_opt)->argInfo & _poptArgMask)
+
+static void installArgCallback( )
+{
+    struct rpmInstallArguments_s * ia = &rpmIArgs;
+
+	ia->transFlags = 11;
+	ia->probFilter = 12;
+    ia->installInterfaceFlags = 13;
+	ia->numRelocations = 14;
+    printf("installArgCallback:rpmIArgs.transFlags=%d,probFilter=%d,installInterfaceFlags=%d,numRelocations=%d\n",
+        rpmIArgs.transFlags,rpmIArgs.probFilter,rpmIArgs.installInterfaceFlags,rpmIArgs.numRelocations);
+
+}
+
+struct poptOption rpmInstallPoptTable[] = {
+/* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+	installArgCallback, 9, NULL, NULL },
+
+ { "file", 'f', 0, 0, 19,
+	N_("query/verify package(s) owning file"), "FILE" },
+ { "group", 'g', 0, 0, 29,
+	N_("query/verify package(s) in group"), "GROUP" },
+    
+{ "allfiles", '\0', POPT_BIT_SET,
+   &rpmIArgs.transFlags, 39,
+ N_("install all files, even configurations which might otherwise be skipped"),
+   NULL},
+{ "allmatches", '\0', POPT_BIT_SET,
+   &rpmIArgs.installInterfaceFlags, 49,
+   N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
+   NULL},
+};
+
+struct poptOption rpmQVSourcePoptTable[] = {
+/* FIX: cast? */
+ { "all", 'a', 0, 0, 59,
+     N_("query/verify all packages"), NULL }
+};
+
+/* the structure describing the options we take and the defaults */
+static struct poptOption optionsTable[] = {
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 1,
+        N_("Query/Verify package selection options:"),
+        NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 4,
+	N_("Verify options (with -V or --verify):"),
+	NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmInstallPoptTable, 5,
+	N_("Install/Upgrade/Erase options:"),
+	NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 6,
+    N_("Verify options (with -V or --verify):"),
+    NULL },
+};
+
+static void invokeCallbacksPRE(const struct poptOption * opt)
+{
+    if (opt != NULL)
+    for (; opt->longName || opt->shortName || opt->arg; opt++) 
+    {
+        printf("invokeCallbacksPRE:opt->val=%d\n",opt->val);
+    	poptArg arg = { .ptr = opt->arg };
+    	if (arg.ptr)
+    	switch (poptArgType(opt)) 
+    	{
+        	case POPT_ARG_INCLUDE_TABLE:	/* Recurse on included sub-tables. */
+                printf("POPT_ARG_INCLUDE_TABLE \n");
+        	    invokeCallbacksPRE(arg.opt);
+        	    break;
+        	case POPT_ARG_CALLBACK:		/* Perform callback. */
+        	    //if (!CBF_ISSET(opt, PRE))
+        		//break;
+                //printf("if (!CBF_ISSET(opt, PRE))  break;\n");
+                arg.cb();
+                printf("arg.cb(con, POPT_CALLBACK_REASON_PRE, NULL, NULL, opt->descrip);\n");
+        	    break;
+    	}
+    }
+}
+
+void callback_pre_test()
+{
+    struct rpmInstallArguments_s * ia = &rpmIArgs;
+    
+    invokeCallbacksPRE(optionsTable);
+
+    printf("installArgCallback:ia.transFlags=%d,probFilter=%d,installInterfaceFlags=%d,numRelocations=%d\n",
+        ia->transFlags,ia->probFilter,ia->installInterfaceFlags,ia->numRelocations);
+
+/*
+    invokeCallbacksPRE:opt->val=1
+    POPT_ARG_INCLUDE_TABLE 
+    invokeCallbacksPRE:opt->val=59
+    
+    invokeCallbacksPRE:opt->val=4
+    POPT_ARG_INCLUDE_TABLE 
+    invokeCallbacksPRE:opt->val=59
+    
+    invokeCallbacksPRE:opt->val=5
+    POPT_ARG_INCLUDE_TABLE 
+    invokeCallbacksPRE:opt->val=9
+    installArgCallback:rpmIArgs.transFlags=11,probFilter=12,installInterfaceFlags=13,numRelocations=14
+    arg.cb(con, POPT_CALLBACK_REASON_PRE, NULL, NULL, opt->descrip);
+    invokeCallbacksPRE:opt->val=19
+    invokeCallbacksPRE:opt->val=29
+    invokeCallbacksPRE:opt->val=39
+    invokeCallbacksPRE:opt->val=49
+    invokeCallbacksPRE:opt->val=97
+    invokeCallbacksPRE:opt->val=0
+    invokeCallbacksPRE:opt->val=0
+    invokeCallbacksPRE:opt->val=0
+    invokeCallbacksPRE:opt->val=0
+    invokeCallbacksPRE:opt->val=0
+    
+    invokeCallbacksPRE:opt->val=6
+    POPT_ARG_INCLUDE_TABLE 
+    invokeCallbacksPRE:opt->val=59
+    
+    installArgCallback:ia.transFlags=11,probFilter=12,installInterfaceFlags=13,numRelocations=14
+*/
+
+}
+
+#define LOCALSTATEDIR  "aaa"
+//#define localstatedir  "aaa"
+
+#define RPMLOCK_PATH  LOCALSTATEDIR   "/rpm/.rpm.lock"
+//#define RPMLOCK_PATH  "/rpm/.rpm.lock"
+//#define offsetof1(type, field) (long)&(((type*)0)->field)
+
+void define_define_function_test(void)
+{
+    printf("define_define_function_test:RPMLOCK_PATH=[%s]\n",RPMLOCK_PATH);
+    printf("define_define_function_test:N_=[%s]\n",N_("ABCD  CMD"));
+    /*
+        define_function_test:RPMLOCK_PATH=[aaa/rpm/.rpm.lock]
+        define_function_test:N_=[ABCD  CMD]
+    */
+}
+
+#define INT_SWAP(a,b) \
+{                   \
+    int tmp = a;    \
+    a = b;          \
+    b = tmp;        \
+}
+int test_define_swap(void)
+{
+    int var_a = 1;
+    int var_b = 2;
+
+    INT_SWAP(var_a, var_b);
+    printf("var_a = %d, var_b = %d\n", var_a, var_b);   // var_a = 2, var_b = 1
+
+    if (1)
+        INT_SWAP(var_a, var_b);
+    printf("var_a = %d, var_b = %d\n", var_a, var_b);   // var_a = 1, var_b = 2
+}
+
+#define offsetof1(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#define container_of(ptr, type, member) ({			\
+	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
+	(type *)( (char *)__mptr - offsetof1(type,member) );})
+
+#if 0
+//在stddef.h头文件中，该宏的完整说明如下：
+#ifdef __cplusplus
+#ifdef _WIN64
+#define offsetof(s,m) (size_t)( (ptrdiff_t)&reinterpret_cast<const volatile char&>((((s *)0)->m)) )
+#else
+#define offsetof(s,m) (size_t)&reinterpret_cast<const volatile char&>((((s *)0)->m))
+#endif
+#else
+#ifdef _WIN64
+#define offsetof(s,m) (size_t)( (ptrdiff_t)&(((s *)0)->m) )
+#else
+#define offsetof(s,m) (size_t)&(((s *)0)->m)
+#endif
+#endif /* __cplusplus */
+
+#endif
+//size_t offsetof( structName, memberName );
+//第一个参数是结构体的名字，第二个参数是结构体成员的名字。该宏返回结构体structName中成员memberName的偏移量。偏移量是size_t类型的。
+
+#define offsetof2(s,m) (size_t)&(((s *)0)->m)
+
+typedef struct
+{
+    int iVal;
+    int iVal2;
+}Test;
+typedef struct
+{
+    char ch;
+    int iNum;
+}Test2;
+int define_function_test(void)
+{
+    Test t = {1, 2};
+    Test2 t2 = {'t', 100};
+    printf("\naddress of t : %p\naddress of t.iVal : %p\naddress of t.iVal2: %p\n\n", &t, &(t.iVal), &(t.iVal2));
+    printf("offset of iVal in t: %d\n", offsetof1(Test, iVal));
+    printf("offset of iVal2 in t: %d\n", offsetof1(Test, iVal2));
+    printf("\naddress of t2 : %p\naddress of t2.ch : %p\naddress of t2.iNum: %p\n\n", &t, &(t2.ch), &(t2.iNum));
+    printf("offset of ch in t2: %d\n", offsetof1(Test2, ch));
+    printf("offset of iNum in t2: %d\n", offsetof1(Test2, iNum));
+    return 0;
+
+    //需要注意的是，Test2中iNum成员的偏移量是4而不是1，这涉及到C语言中内存对齐机制。
+    /*
+        address of t : 0x7ffd42a7c660
+        address of t.iVal : 0x7ffd42a7c660
+        address of t.iVal2: 0x7ffd42a7c664
+        offset of iVal in t: 0
+        offset of iVal2 in t: 4
+        
+        address of t2 : 0x7ffd42a7c660
+        address of t2.ch : 0x7ffd42a7c650
+        address of t2.iNum: 0x7ffd42a7c654        
+        offset of ch in t2: 0
+        offset of iNum in t2: 4
+    */
+    
+}
+
+
+#define MAX_KEY_VALUE_LENGTH 1048576//256
+#define MAX_KEY_TYPE_LENGTH 256
+#define MAX_C 1024
+#define MAX_RELEASE_LENGTH 32
+
+#define POLICY_ARG_NUM 6
+
+typedef struct key_list {
+	unsigned int key_length;
+	char *key;//key
+	unsigned int value_length;
+	char *value;//值,地址
+	struct key_list *next;
+}key_list;
+
+//head
+struct policy_head {
+	unsigned int id;//	策略id
+	unsigned char type;//	策略类型;具体取值参考《可信计算支撑平台-策略格式设计说明书V1.22》定义
+	unsigned char level;//	策略的级别
+    char release[MAX_RELEASE_LENGTH] ;//策略的版本
+	unsigned int reserved;//策略体扩展部分的个数
+};
+
+//body
+#define PIC_DATA_LENGTH 1048576
+struct policy_body {
+    char subject_type[MAX_KEY_TYPE_LENGTH];//	主体的类型
+    char subject_value[MAX_KEY_VALUE_LENGTH];//	主体的值
+
+    char Object_type[MAX_KEY_TYPE_LENGTH];//	客体的类型
+    char Object_value[MAX_KEY_VALUE_LENGTH];//	客体的值
+
+    char Action_type[MAX_KEY_TYPE_LENGTH];//	执行动作的类型
+    char Action_value[MAX_KEY_VALUE_LENGTH];//	执行的处理动作
+
+    char Constraint_type[MAX_KEY_TYPE_LENGTH];//	约束类型
+    char Constraint_value[MAX_KEY_VALUE_LENGTH];//	约束内容
+
+    char diff_soft_ver[1024];
+    //add desc,filesize,groupid,pictype,picdata
+    char File_Desc[MAX_C];
+    char File_Size[MAX_C];
+    char package_ver[MAX_C];
+    char Group_ID[MAX_C];
+    char File_Pic_Type[MAX_C];
+    char File_Pic_Data[PIC_DATA_LENGTH];
+    unsigned int cflag;
+    char soft_hash[32];
+    char soft_cert[32];
+    char soft_property[2];
+    void *reserved;//扩展部分
+};
+
+typedef struct policy_body_list {
+    struct policy_body policy_body_p;//策略体信息
+	struct policy_body_list *next;//下一条策略体信息
+}policy_body_list;
+
+struct policy_white{
+    char subject_type[4];//   主体的类型
+    char subject_value[512];// 主体的值
+
+    char Object_type[4];//    客体的类型
+    char Object_value[128];//  客体的值
+
+    char Action_type[4];//    执行动作的类型
+    char Action_value[256];//  执行的处理动作
+};
+
+struct policy_white_list{
+    struct policy_white policy_white_p;
+    struct policy_white_list *next;
+};
+//策略返回值
+typedef struct policy_result{
+	int total_num;
+	int result_num;
+}policy_result;
+
+//策略整体信息
+typedef struct policy_info {
+	struct policy_head *policy_head_p;
+	struct policy_body_list *policy_body_list_p;
+    struct policy_white_list *policy_white_list_p;
+    struct policy_result white_list_num;
+}policy_info;
+
+struct policy_arg {
+    int type;
+    int subtype;
+    int items_start;
+    int items_offset;
+
+    struct policy_info *info;
+    int list_len;
+    char softid[256];
+    char searchkey[256];
+};
+#define DEFAULT_MAX_CONT_LENGTH 1024
+#define PATH_MAX 4096
+
+struct audit_info {
+	int  audit_module;//审计模块
+	unsigned long audit_time;//审计时间，秒
+//	int audit_type;//审计类型
+//	int operation_type;//操作类型
+//	int subject_type;//主体类型
+//    char subject[PATH_MAX];//主体
+//	int object_type;//客体类型
+//    char object[PATH_MAX];//客体
+//	int  audit_result;//审计结果
+    char desc[DEFAULT_MAX_CONT_LENGTH];//描述 add Q7:/root/a.q7
+//	int reserve;//保留字?
+    char user[PATH_MAX];//subject;//user
+    char opobject[PATH_MAX];//object);//path-process
+    int optype;//audit_type
+    int opresult;//result
+    char resv[PATH_MAX];//desc
+};
+
+struct audit_list {
+    struct audit_info audit;//审计信息
+	struct audit_list *next;//下一条审计信息
+};
+
+//指令信息
+typedef struct cmd_info {
+    unsigned short cmd_type;//指令类型
+	struct key_list *cmd_pram;//指令参数
+    struct audit_list *audit_pram;
+
+	//struct user_info *user_info_p; //王伟
+	//struct key_info *key_info_p;	//王伟
+	//struct license_info *license_info_p;	//梁伟伟
+	//struct system_list *system_list_p;	//王伟
+	//struct audit_list *audit_list_p;	//赵斌
+	//struct soft_list *soft_list_p;	//胡登，刘慎增
+	//struct policy_info *policy_info_p;	//梁伟伟
+	//struct usb_peripheral_info usb_p;	//王安生
+	//struct product_info product_info_p;//郭贤东，梁伟伟，王伟
+	//策略配置 //梁伟伟
+	void *data;//返回的数据，根据指令类型做强制转换.
+
+	unsigned char result;//结果
+	int reserve;//保留字
+}cmd_info;
+/* reserved 类型 */
+struct policy_reserved {
+    char type[MAX_KEY_TYPE_LENGTH];
+    char value[MAX_KEY_TYPE_LENGTH];
+};
+/*******************************************************************************
+* 函数名称: ItemList_print
+* 函数功能: 将sp软件查询结果保存到policy链表用于展示输出到界面
+* 函数参数: 
+*******************************************************************************/
+void ItemList_print(policy_info* stPolicyInfo, policy_result *stPolicyNum)
+{
+    if(NULL == stPolicyNum){
+        printf("ItemList_print SysPatch itemList Failed!\n");
+    }
+    printf("stPolicyNum->result_num=%d,stPolicyNum->total_num=%d\n",stPolicyNum->result_num,stPolicyNum->total_num);
+    int iCount = stPolicyNum->result_num;
+    if( iCount >= 0)
+    {
+        struct policy_body_list *stPolicyBodyList = stPolicyInfo->policy_body_list_p;
+        for(int i = 0; i < iCount; i++)
+        {
+            struct policy_body_list stPolicyBodyListTemp = stPolicyBodyList[i];
+            // 软件名称
+            printf("stPolicyBodyListTemp.policy_body_p.subject_type=[%s]\n",stPolicyBodyListTemp.policy_body_p.subject_type);
+            printf("stPolicyBodyListTemp.policy_body_p.subject_value=[%s]\n",stPolicyBodyListTemp.policy_body_p.subject_value);
+
+            // 软件版本
+            printf("stPolicyBodyListTemp.policy_body_p.Object_type=[%s]\n",stPolicyBodyListTemp.policy_body_p.Object_type);
+            printf("stPolicyBodyListTemp.policy_body_p.Object_value=[%s]\n",stPolicyBodyListTemp.policy_body_p.Object_value);
+
+            // 软件状态
+            printf("stPolicyBodyListTemp.policy_body_p.Action_type=[%s]\n",stPolicyBodyListTemp.policy_body_p.Action_type);
+            printf("stPolicyBodyListTemp.policy_body_p.Action_value=[%s]\n",stPolicyBodyListTemp.policy_body_p.Action_value);
+
+            // SP中的KEY值
+            printf("stPolicyBodyListTemp.policy_body_p.Group_ID=[%s]\n",stPolicyBodyListTemp.policy_body_p.Group_ID);
+            //reserved值
+            printf("stPolicyBodyListTemp.policy_body_p.reserved=[%s]\n",stPolicyBodyListTemp.policy_body_p.reserved);
+        }
+    }
+}
+
+/*******************************************************************************
+* 函数名称: ItemList_print_list
+* 函数功能: 将sp软件查询结果保存到policy链表用于展示输出到界面
+* 函数参数: 
+*******************************************************************************/
+void ItemList_print_list(cmd_info cmd_infolist)
+{
+    key_list *key_list_tmp = cmd_infolist.cmd_pram;
+    struct policy_info *info;
+    int count = 0;
+    policy_result *policy_result_tmp = (policy_result *)cmd_infolist.data;
+    printf("ItemList_print_list,policy_result->result_num=%d,policy_result_tmp->total_num=%d.\n",policy_result_tmp->result_num,policy_result_tmp->total_num);
+
+    
+    printf("ItemList_print_list,111.\n");
+    while(key_list_tmp != NULL)
+    {
+        printf("ItemList_print_list,count=%d.\n",count);
+        if(count == 1)
+        {
+            printf("ItemList_print_list,00.\n");
+            int nItemsStart = *(int *)key_list_tmp->value;
+            // 软件名称
+            printf("ItemList_print_list,nItemsStart=%d\n",nItemsStart);
+        }
+        if(count == 3)
+        {
+            printf("ItemList_print_list,22.\n");
+            info = (struct policy_info *)key_list_tmp->value;
+            policy_body_list *stPolicyBodyList = info->policy_body_list_p;
+
+            
+            for(int i = 0; i < policy_result_tmp->result_num; i++)
+            {
+                struct policy_body_list stPolicyBodyListTemp = stPolicyBodyList[i];
+                // 软件名称
+                printf("ItemList_print_list,stPolicyBodyListTemp.policy_body_p.subject_value=[%s]\n",stPolicyBodyListTemp.policy_body_p.subject_value);
+            
+                // 软件版本
+                printf("ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Object_value=[%s]\n",stPolicyBodyListTemp.policy_body_p.Object_value);
+            
+                // 软件状态
+                printf("ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Action_value=[%s]\n",stPolicyBodyListTemp.policy_body_p.Action_value);
+            
+                // SP中的KEY值
+                printf("ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Group_ID=[%s]\n",stPolicyBodyListTemp.policy_body_p.Group_ID);
+                //reserved值
+                printf("ItemList_print_list,info->policy_body_list_p->policy_body_p.reserved=[%s]\n",stPolicyBodyListTemp.policy_body_p.reserved);
+            }
+            
+            // 软件名称
+            //printf("info->policy_body_list_p->policy_body_p.subject_value=[%s]\n",info->policy_body_list_p->policy_body_p.subject_value);
+            // 软件版本
+            //printf("info->policy_body_list_p->policy_body_p.Object_value=[%s]\n",info->policy_body_list_p->policy_body_p.Object_value);
+            // 软件状态
+            //printf("info->policy_body_list_p->policy_body_p.Action_value=[%s]\n",info->policy_body_list_p->policy_body_p.Action_value);
+            // SP中的KEY值
+            //printf("info->policy_body_list_p->policy_body_p.Group_ID=[%s]\n",info->policy_body_list_p->policy_body_p.Group_ID);
+            //reserved值
+            //printf("info->policy_body_list_p->policy_body_p.reserved=[%c]\n",info->policy_body_list_p->policy_body_p.reserved);
+        }
+        count++;
+        
+        key_list_tmp = key_list_tmp->next;
+    }
+}
+
+
+/*
+地址传递方法：
+    struct policy_arg *arg  =》 决定了arg->info  用‘->’,info本身也是指针地址。
+    struct key_list *next = NULL;  =》 决定了next->value  用‘->’,value本身也是指针地址。
+   
+    arg->info = (struct policy_info *)next->value;
+    get_self_arg:ppppppppp arg->info=0x564ea4c0d4b0,next->value=0x564ea4c0d4b0
+    1.next->value地址强转后赋值给arg->info，即两个变量存储着相同的寄存器地址，则在该寄存器地址上的数据改动，两个变量都会随之改变，即改变其中一个的，另一个也会跟着变动。
+*/
+static int get_self_arg(struct key_list *l, struct policy_arg *arg)
+{
+	int i = 0;
+	struct key_list *next = NULL;
+
+	if ((NULL != l) && (NULL != arg)) {
+		memset(arg, 0, sizeof(struct policy_arg));
+		next = l;
+		for (i = 0; i < POLICY_ARG_NUM && next; i++) {
+			switch(i) {
+				case 0:
+					{
+						if (next->value_length > 0) {
+							arg->type = *(int *)next->value;
+						}
+						break;
+					}
+				case 1:
+					{
+						if (next->value_length > 0) {
+							arg->items_start = *(int *)next->value;
+						}
+						break;
+					}
+				case 2:
+					{
+						if (next->value_length > 0) {
+							arg->items_offset = *(int *)next->value;
+						}
+						break;
+					}
+				case 3:
+					{
+						if (next->value_length > 0) {
+							arg->info = (struct policy_info *)next->value;
+                            printf("get_self_arg:ppppppppp arg->info=%p,next->value=%p\n",arg->info,next->value);
+                            /*
+                                get_self_arg:ppppppppp arg->info=0x564ea4c0d4b0,next->value=0x564ea4c0d4b0
+                            */
+						}
+						break;
+					}
+				case 4:
+					{
+						if (next->value_length > 0) {
+							arg->list_len = *(int *)next->value;
+						}
+						break;
+					}
+				case 5:
+					{
+						if (next->value_length > 0) {
+							strcpy(arg->softid,next->value);
+						}
+						break;
+					}
+				case 6:
+					{
+						if (next->value_length > 0) {
+							strcpy(arg->searchkey,next->value);
+						}
+						break;
+					}
+
+				default:
+					{
+						break;
+					}
+			}
+
+			next = next->next;
+		}
+		arg->subtype = 0;
+
+		return 0;
+	}
+
+	return -1;
+}
+
+/*******************************************************************************
+* 函数名称: ply_spsoftware_report
+* 函数功能: 根据关键字查询sp中的软件
+* 函数参数: 
+* 参数名称:          类型                     输入/输出     描述
+* 返回值: -1--失败; >=0 查询成功,返回匹配关键字的条数
+*******************************************************************************/
+int ply_spsoftware_report(struct policy_info *info)
+{
+	int ret = -1;
+	int i = 0, j = 0, reserved = 0;
+	struct policy_body_list *list = NULL;
+    int count = 0;
+
+	if (NULL != info->policy_body_list_p){
+		list = info->policy_body_list_p;
+		for (i = 0; i < 3; i++) {
+			
+			// software name
+			strncpy(list->policy_body_p.subject_type, "111",(i+1));
+			strcpy(list->policy_body_p.subject_value, "11 name");
+
+			//software version
+			strncpy(list->policy_body_p.Object_type, "222",(i+1));
+			strcpy(list->policy_body_p.Object_value, "22 version");
+
+			//software status 
+			strncpy(list->policy_body_p.Action_type, "333",(i+1));
+			strcpy(list->policy_body_p.Action_value, "33 status");	
+			
+			strcpy(list->policy_body_p.Group_ID, "groupid");	
+			strcpy(list->policy_body_p.reserved, "reserved");	
+            count++;
+			list = list->next;
+		}
+
+    //num = count;//返回查询到的软件名条数
+    
+out:
+		return count;
+	}
+
+	return ret;
+}
+
+int policy_spsoftwarelist_find(struct cmd_info *cmd)
+{
+	int ret = 0;
+	struct policy_arg arg;
+    memset(&arg,0,sizeof(struct policy_arg));
+	struct policy_result *pret = NULL;
+
+	if (!cmd || !cmd->cmd_pram || !cmd->data) {
+        printf("invalid para.\n");
+		return -1;
+	}
+
+	pret= (struct policy_result *)cmd->data;
+	ret = get_self_arg(cmd->cmd_pram, &arg);
+	if (ret) {
+        printf("get_self_arg fail.\n");
+		return ret;
+	}
+	
+    ItemList_print(arg.info, pret);
+    /*
+        stPolicyNum->result_num=2,stPolicyNum->total_num=0
+        stPolicyBodyListTemp.policy_body_p.subject_value=[]
+        stPolicyBodyListTemp.policy_body_p.Object_value=[]
+        stPolicyBodyListTemp.policy_body_p.Action_value=[]
+        stPolicyBodyListTemp.policy_body_p.Group_ID=[]
+        stPolicyBodyListTemp.policy_body_p.reserved=[reserved-in]
+        stPolicyBodyListTemp.policy_body_p.subject_value=[]
+        stPolicyBodyListTemp.policy_body_p.Object_value=[]
+        stPolicyBodyListTemp.policy_body_p.Action_value=[]
+        stPolicyBodyListTemp.policy_body_p.Group_ID=[]
+        stPolicyBodyListTemp.policy_body_p.reserved=[reserved-in]
+    */
+    
+    printf("policy_spsoftwarelist_find,======.\n\n");
+
+    /* 传递arg.info的指针地址 */
+    ret = ply_spsoftware_report(arg.info);
+    pret->total_num = ret;
+    pret->result_num = ret;
+    
+    ItemList_print_list(*cmd);
+/*
+    policy_spsoftwarelist_find,======.
+
+    ItemList_print_list,policy_result->result_num=3,policy_result_tmp->total_num=3.
+    ItemList_print_list,111.
+    ItemList_print_list,count=0.
+    ItemList_print_list,count=1.
+    ItemList_print_list,00.
+    ItemList_print_list,nItemsStart=11
+    ItemList_print_list,count=2.
+    ItemList_print_list,count=3.
+    ItemList_print_list,22.
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    ItemList_print_list,info->policy_body_list_p->policy_body_p.reserved=[reserved]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    ItemList_print_list,info->policy_body_list_p->policy_body_p.reserved=[reserved]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    ItemList_print_list,info->policy_body_list_p->policy_body_p.reserved=[reserved]
+    ItemList_print_list,count=4.
+    ItemList_print_list,count=5.
+    ItemList_print_list,count=6.
+
+*/
+    
+    ItemList_print(arg.info, pret);
+/*
+
+    stPolicyNum->result_num=3,stPolicyNum->total_num=3
+    stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    stPolicyBodyListTemp.policy_body_p.reserved=[reserved]
+    stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    stPolicyBodyListTemp.policy_body_p.reserved=[reserved]
+    stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    stPolicyBodyListTemp.policy_body_p.reserved=[reserved]
+
+*/
+	return ret;
+
+}
+
+
+key_list* insertLastList(char* insertValue, int valueLength)
+{
+    key_list *pNode = (key_list*)malloc(sizeof(key_list));
+    memset(pNode, 0, sizeof(key_list));
+    pNode->value = insertValue;
+    pNode->value_length = valueLength;
+    pNode->next = NULL;
+    return pNode;
+}
+
+int policy_spsoftwarelist_find_test()
+{   
+    int ret = 0;
+    int nCategory = 10;
+    int nListLen = 10;
+    int nItemsStart = 11;
+    int nItemsOffset = 20;
+    policy_body_list *plist = NULL;
+    key_list *pKeyList = NULL, *p = NULL;
+        //指令参数
+    pKeyList = insertLastList((char*)&nCategory, sizeof(nCategory));
+    p = pKeyList;
+    p->next = insertLastList((char*)&nItemsStart, sizeof(nItemsStart));
+    p = p->next;
+    p->next = insertLastList( (char*)&nItemsOffset, sizeof(nItemsOffset));
+    p = p->next;
+    policy_info *stPolicyInfo = (policy_info*)malloc(sizeof(policy_info));
+    memset(stPolicyInfo, 0, sizeof(*stPolicyInfo));
+    
+    policy_body_list *stPolicyBodyList = (policy_body_list*) malloc(sizeof(policy_body_list) * nListLen);
+    if(NULL == stPolicyBodyList){
+        printf("stPolicyBodyList malloc failed!.\n");
+    }
+    memset(stPolicyBodyList, 0, sizeof(policy_body_list) * nListLen);
+    plist = stPolicyBodyList;
+    for (int i = 0; i < nListLen; i++)
+    {
+        stPolicyBodyList[i].policy_body_p.reserved = (struct policy_reserved*)malloc(sizeof(struct policy_reserved));  //policy_reserved:soft_ID
+        //memset(stPolicyBodyList[i].policy_body_p.reserved, 0, sizeof(struct policy_reserved));
+        strcpy(stPolicyBodyList[i].policy_body_p.reserved, "reserved-in");
+        plist->next = &stPolicyBodyList[i];
+        plist = plist->next;
+    }
+    stPolicyInfo->policy_body_list_p = stPolicyBodyList;
+    p->next = insertLastList((char*)stPolicyInfo, sizeof(stPolicyInfo));
+    p = p->next;
+    p->next = insertLastList((char*)&nListLen, sizeof(nListLen));
+    p = p->next;
+    p->next = insertLastList("123456789", 9);
+    p = p->next;
+    p->next = insertLastList("111222333", 9);
+    p = p->next;
+    p->next = NULL;
+    policy_result *pStResult = (policy_result*) malloc(sizeof(policy_result));
+    if(NULL == pStResult){
+        printf("pStResult fail.\n");
+    }
+    pStResult->result_num = 2;
+    pStResult->total_num = 0;
+
+
+    struct cmd_info stCmdInfo;
+    stCmdInfo.cmd_type = 0x65;
+    stCmdInfo.cmd_pram = pKeyList;
+    stCmdInfo.data = pStResult;
+
+
+    //ItemList_print(stPolicyInfo, pStResult);
+    //ItemList_print_list(stCmdInfo);
+    //printf("policy_spsoftwarelist_find,before.\n\n");
+
+    policy_spsoftwarelist_find(&stCmdInfo);
+    //printf("policy_spsoftwarelist_find,after.\n\n");
+
+    ItemList_print(stPolicyInfo, pStResult);
+    /* pStResult:
+    stPolicyNum->result_num=3,stPolicyNum->total_num=3
+    
+    stPolicyInfo->policy_body_list->policy_body:
+    stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    stPolicyBodyListTemp.policy_body_p.reserved=[reserved]
+    stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    stPolicyBodyListTemp.policy_body_p.reserved=[reserved]
+    stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    stPolicyBodyListTemp.policy_body_p.reserved=[reserved]
+    */
+    
+    ItemList_print_list(stCmdInfo);
+    /*
+    ItemList_print_list,policy_result->result_num=3,policy_result_tmp->total_num=3.
+    ItemList_print_list,111.
+    
+    ItemList_print_list,count=0.
+    
+    ItemList_print_list,count=1.
+    ItemList_print_list,00.
+    ItemList_print_list,nItemsStart=11
+    
+    ItemList_print_list,count=2.
+    ItemList_print_list,count=3.
+    ItemList_print_list,22.
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    ItemList_print_list,info->policy_body_list_p->policy_body_p.reserved=[reserved]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    ItemList_print_list,info->policy_body_list_p->policy_body_p.reserved=[reserved]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.subject_value=[11 name]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Object_value=[22 version]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Action_value=[33 status]
+    ItemList_print_list,stPolicyBodyListTemp.policy_body_p.Group_ID=[groupid]
+    ItemList_print_list,info->policy_body_list_p->policy_body_p.reserved=[reserved]
+    ItemList_print_list,count=4.
+    ItemList_print_list,count=5.
+    ItemList_print_list,count=6.
+    */
+    
+    key_list* del = NULL;
+    del = pKeyList;
+    while(pKeyList->next != 0)
+    {
+        del = pKeyList;
+        pKeyList = pKeyList->next;
+        free(del);
+        //delete del;
+    }
+    free(pKeyList);
+    //delete pKeyList;
+
+    for(int i=0; i<nListLen; i++){
+        free(stPolicyBodyList[i].policy_body_p.reserved);
+    }
+    free(stPolicyBodyList);
+    free(stPolicyInfo);
+    if(NULL != pStResult){
+        free(pStResult);
+        //delete pStResult;
+        pStResult = NULL;
+    }
+
+	return ret;
+
+}
+
+
+
+void handle_cmd_msg(void)
+{
+	char job_id[64] = {0};
+
+
+	int ret = 0;//default value success;
+
+	//char cmd[1024] = {0};
+	char *cmd = NULL;
+	//char x_cmd[1024] = {0};
+	char *x_cmd = NULL;
+
+	char *output = NULL;
+
+	FILE *fp = NULL;
+	char line[1024] = {0};
+
+	char *des = NULL;
+	int des_count = 0;
+	int des_counttmp = 0;
+
+    int pid = getpid();
+    printf("pid [%d]\n",pid);
+
+	cmd = (char *)malloc(50);
+	if(cmd == NULL){
+		goto out;
+	}
+
+	x_cmd = (char *)malloc(50);
+	if(x_cmd == NULL){
+		goto out;
+	}
+
+	memset(cmd,0,50);
+	memset(x_cmd,0,50);
+	
+	//strcpy(cmd,"ulimit \"-c\" \"0\"");
+	strcpy(cmd,"ulimit -a");
+	//strcpy(cmd,"ulimit -m unlimited");
+	//strcpy(cmd,"ulimit -c unlimited");
+	//strcpy(cmd,"ls -la namefile");
+	//strcpy(cmd,"prlimit -p 6034 --core=unlimited:");
+    printf("cmd [%s]\n",cmd);
+
+	
+	//snprintf(x_cmd,strlen(obj->valuestring),"%s",cmd);
+	snprintf(x_cmd,strlen(cmd) + 1,"%s",cmd);
+	//snprintf(x_cmd,50,"prlimit -p %d --core=110",pid);
+	//snprintf(x_cmd,50,"prlimit --pid $$ --core=unlimited");
+    printf("strlen(x_cmd)=%d,strlen(cmd)=%d\n",strlen(x_cmd),strlen(cmd));
+    printf("x_cmd [%s]\n",x_cmd);
+
+	//ret = system(x_cmd);
+
+#if 1
+	fp = popen(x_cmd,"r");
+	if(fp == NULL){
+		ret = -1;
+	}else{
+		while(!feof(fp)){
+			memset(line,'\0',sizeof(line));
+			//memset(line,0,sizeof(line));
+			if(fgets(line,1024,fp)){
+                printf("line 11 [%s]\n",line);
+				if(line[strlen(line)-1] == '\n')
+				{
+					line[strlen(line)-1] = '\0';
+				}
+                printf("line 22 [%s]\n",line);
+
+				des_count += 1024;
+				des = realloc(des,des_count);
+                des_counttmp = des_count - 1024;
+                printf("des_counttmp=%d,des_count=%d\n\n",des_counttmp,des_count);
+                memset(des + des_counttmp, 0,1024);
+                //memset(des, 0,des_count);
+                strncat(des,line,strlen(line));
+			}
+		}
+	}
+
+	pclose(fp);
+	fp = NULL;
+    printf("des [%s]\n",des);
+    if(des){
+        free(des);
+        des = NULL;
+    }
+#endif
+out:
+
+
+	if(cmd){
+		free(cmd);
+		cmd = NULL;
+	}
+
+	if(x_cmd){
+		free(x_cmd);
+		x_cmd = NULL;
+	}
+
+	
+}
+
+#define TIP_RETV_FILE "/tmp/retv.file"
+#define TIP_CONFIG_FILE "/opt/softmanager/tipterminal/var/tipcore.conf"
+#define STATE_DAT_FILE "/opt/softmanager/tipterminal/var/state.dat"
+#define KEY_MANAGER_ADDR       "MANAGE_CENTER_ADDR"
+#define KEY_SOFTWARE_ADDR      "SOFT_POOL_ADDR"
+#define KEY_AUDIT_ADDR         "AUDIT_ADDR"
+#define KEY_PLATFORM_NAME      "PLATFORM_NAME"
+#define KEY_LOGIN_MAX_RETIRES  "LOGIN_MAX_RETIRES"
+#define KEY_LOGIN_LOCK_TIME    "LOGIN_LOCK_TIME"
+#define KEY_LOGIN_UNLOCK_TIME  "LOGIN_UNLOCK_TIME"
+#define KEY_LOGIN_REJECT_TIMES "LOGIN_REJECT_TIMES"
+#define KEY_INSTALL            "INSTALL"
+#define KEY_SWITCH_MODE        "MODE"
+#define KEY_NODEID             "NODEID"
+#define AUDIT_SYSLOG_FLAG      "OTHER_AUDIT_SWITCH"
+#define AUDIT_SERVER_IP	       "OTHER_AUDIT_IPADDR"
+#define AUDIT_SERVER_PORT	"OTHER_AUDIT_PORT"
+#define AUDIT_VALID_DAYS	"AUDIT_VALID"
+#define FEATURE_SWTICH 		"FEATURE_SWTICH"
+#define KEY_MANAGER_PORT       "MANAGE_CENTER_PORT"
+#define KEY_USERID				"USERID"
+
+#define LOGON "LOGON"
+#define REGISTER_STATE "REGISTER_STATE"
+#define LINK "LINK"
+#define AUDIT "AUDIT"
+#define USERID "USERID"
+
+#define KEY_LOGON              "LOGON"
+#define KEY_ACTIVE             "REGISTER_STATE"
+#define KEY_LINK               "LINK"
+#define KEY_AUDIT              "AUDIT"
+
+
+#define CONF_READ  0
+#define CONF_WRITE 1
+
+#define DEF_LOGIN_LOCK_TIME    1800
+
+static int g_mode = CONF_READ;
+static struct config_info_st conf;
+
+#define TIP_CONFIG_FILE  "/opt/softmanager/tipterminal/var/tipcore.conf"
+#define TIP_VERSION_FILE "/opt/softmanager/tipterminal/var/version.txt"
+#define TIP_STATE_FILE   "/opt/softmanager/tipterminal/var/state.dat"
+
+int setMode(int mode)
+{
+    g_mode = mode;
+}
+
+static int read_state(struct config_info_st *cfg)
+{
+    FILE *fp = NULL;
+    char buf[256];
+    int ret = -1;
+
+    fp = fopen(TIP_STATE_FILE, "r");
+    if (fp == NULL) {
+        goto out;
+    }
+
+    while (!feof(fp)) {
+        if (fgets(buf, sizeof(buf), fp)) {
+            sscanf(buf, KEY_LOGON" %d", &cfg->logon);
+            sscanf(buf, KEY_ACTIVE" %d", &cfg->active);
+            sscanf(buf, KEY_LINK" %d", &cfg->link);
+            sscanf(buf, KEY_AUDIT" %d", &cfg->audit);
+        }
+    }
+
+    ret = 0;
+out:
+    if (fp) {
+        fclose(fp);
+    }
+    return ret;
+}
+
+
+static int read_conf(struct config_info_st *cfg)
+{
+    FILE *fp = NULL;
+    char buf[256];
+    int ret = -1;
+	
+    fp = fopen(TIP_CONFIG_FILE, "r");
+    if (fp == NULL) {
+        goto out;
+    }
+
+    while (!feof(fp)) 
+    {
+        if (fgets(buf, sizeof(buf), fp)) 
+        {
+            if (buf[0] == '#') {
+                continue;
+            }
+            sscanf(buf, KEY_MANAGER_ADDR" %s", cfg->manager_address);
+            sscanf(buf, KEY_MANAGER_PORT" %s", cfg->manage_center_port);
+            sscanf(buf, KEY_SOFTWARE_ADDR" %s", cfg->software_address);
+            sscanf(buf, KEY_AUDIT_ADDR" %s", cfg->audit_address);
+            sscanf(buf, KEY_PLATFORM_NAME" %s", cfg->platform_name);
+
+            sscanf(buf, KEY_LOGIN_MAX_RETIRES" %d", &cfg->login_max_retries);
+            sscanf(buf, KEY_LOGIN_LOCK_TIME" %d", &cfg->login_lock_time);
+            sscanf(buf, KEY_LOGIN_UNLOCK_TIME" %d", &cfg->login_unlock_time);
+            sscanf(buf, KEY_LOGIN_REJECT_TIMES" %d", &cfg->login_reject_times);
+
+            sscanf(buf, KEY_INSTALL" %d", &cfg->install);
+
+            sscanf(buf, KEY_SWITCH_MODE " %d", &cfg->mode);  /* ZhengJunpu added */
+
+    	    sscanf(buf, KEY_NODEID "%s", cfg->nodeid);
+
+    	    sscanf(buf,AUDIT_SYSLOG_FLAG" %d",&cfg->syslog_flag);
+    	    sscanf(buf,AUDIT_SERVER_IP" %s",&cfg->ipinfo);
+    	    sscanf(buf,AUDIT_SERVER_PORT" %d",&cfg->portinfo);
+
+    		sscanf(buf,FEATURE_SWTICH" %d",&cfg->switch_mode);
+    		sscanf(buf, KEY_USERID" %s", cfg->userid);
+    		cfg->valid_days = 360;
+
+        }
+    }
+
+    if (cfg->login_lock_time == 0) {
+        cfg->login_lock_time = DEF_LOGIN_LOCK_TIME;
+    }
+
+    ret = 0;
+out:
+    if (fp) {
+        fclose(fp);
+    }
+    return ret;
+}
+
+struct config_info_st* config_get(int mode)
+{
+
+    g_mode |= mode;
+    read_conf(&conf);
+    read_state(&conf);
+    printf("config_get:pppp &conf=%p.\n",&conf);
+    return &conf;
+}
+#define ID_LEN	16
+
+int get_socid(char *socid)
+{
+	char buf[ID_LEN + 1] = { 0 };	
+
+	int ret = 0;
+
+	int dev_fd = open("/dev/unique_id", O_RDONLY);
+	if (-1 == dev_fd)	
+	{
+		printf("��unique_id�豸ʧ��!\n");
+		sprintf(buf,"invalid_soc_dev");
+		sprintf(socid, "%s", buf);
+		
+		ret =  -1;
+		goto out;
+	}
+	
+	ret = read(dev_fd, buf, ID_LEN);
+	if (ret == 16)	
+	{
+		printf("get_socid:unique_id: %s\n", buf);	
+	}
+	close(dev_fd);
+
+
+
+	sprintf(socid, "%s", buf);
+	ret = 0;
+out:
+	return ret;	
+}
+
+static int save_conf(struct config_info_st *cfg)
+{
+    FILE *fp = NULL;
+    int soc_ret = 0;
+    char socid[64] = {0};
+	
+    fp = fopen(TIP_CONFIG_FILE, "w");
+    if (fp != NULL) 
+    {
+        fprintf(fp, KEY_MANAGER_ADDR" %s\n", cfg->manager_address);
+        fprintf(fp, KEY_SOFTWARE_ADDR" %s\n", cfg->software_address);
+        fprintf(fp, KEY_AUDIT_ADDR" %s\n", cfg->audit_address);
+        fprintf(fp, KEY_PLATFORM_NAME" %s\n", cfg->platform_name);
+
+        fprintf(fp, KEY_LOGIN_MAX_RETIRES" %d\n", cfg->login_max_retries);
+        fprintf(fp, KEY_LOGIN_LOCK_TIME" %d\n", cfg->login_lock_time);
+    	fprintf(fp, KEY_LOGIN_UNLOCK_TIME" %d\n", cfg->login_unlock_time);
+    	fprintf(fp, KEY_LOGIN_REJECT_TIMES" %d\n", cfg->login_reject_times);
+
+    	fprintf(fp, KEY_INSTALL" %d\n", cfg->install);
+    	
+    	/* ZhengJunpu added */
+    	fprintf(fp, KEY_SWITCH_MODE" %d\n", cfg->mode);
+    	printf("%s(%d) #################   cfg->mode=%d\n", __FUNCTION__, __LINE__, cfg->mode );
+
+    	strncpy(socid,cfg->nodeid,64);
+    	printf("%s(%d) #################   cfg->nodeid=%s\n", __FUNCTION__, __LINE__, cfg->nodeid );
+
+    	soc_ret = get_socid(cfg->nodeid);
+    	if(soc_ret){
+    		printf("save_conf Get socdev id  error.\n");
+    	}		
+
+    	if(strcmp("invalid_soc_dev",cfg->nodeid) == 0)
+    	{
+    		printf("old  socdev id is invalid .\n");
+    		soc_ret = get_socid(cfg->nodeid);
+    		if(soc_ret){
+    			printf("save_conf Get socdev id  failed.\n");
+    		}		
+
+    	}
+
+    	if(strcmp("invalid_soc_dev",cfg->nodeid) == 0){
+    		fprintf(fp, KEY_NODEID" %s\n", socid);
+    		strncpy(cfg->nodeid,socid,64);
+    	}else{
+    		fprintf(fp, KEY_NODEID" %s\n", cfg->nodeid);
+    	}
+
+    	fprintf(fp,AUDIT_SYSLOG_FLAG" %d\n",cfg->syslog_flag);
+    	fprintf(fp,AUDIT_SERVER_IP" %s\n",cfg->ipinfo);
+    	fprintf(fp,AUDIT_SERVER_PORT" %d\n",cfg->portinfo);
+    	fprintf(fp,AUDIT_VALID_DAYS" %d\n",cfg->valid_days);
+
+    	fprintf(fp,FEATURE_SWTICH" %d\n",cfg->switch_mode);
+
+    	fprintf(fp,KEY_USERID" %s\n",cfg->userid);
+        fclose(fp);
+    }
+
+    fp = fopen(TIP_STATE_FILE, "w"); 
+    if (fp != NULL) {
+        fprintf(fp, KEY_LOGON" %d\n", cfg->logon);
+        fprintf(fp, KEY_ACTIVE" %d\n", cfg->active);
+        fprintf(fp, KEY_LINK" %d\n", cfg->link);
+        fprintf(fp, KEY_AUDIT" %d\n", cfg->audit); 
+        fclose(fp);
+    }
+
+    return 0;
+}
+
+void config_put()
+{
+    int wr = 0;
+
+    if (g_mode == CONF_WRITE) {
+        g_mode = CONF_READ;
+        wr = 1;
+    }
+    if (wr) {
+		printf("config_put:setOn-OfflineMode   conf.mode=%d.\n",conf.mode);
+        save_conf(&conf);
+    }
+}
+
+/*
+地址传递方法：
+	struct config_info_st *cfgst;
+    static struct config_info_st conf;
+
+    1.int *result :通过函数参数指针的地址传递获取返回值
+    2.函数config_get 返回地址全局变量conf的地址&conf，赋值给cfgst，所以 cfgst=0x55bea7eec520,&conf=0x55bea7eec520 ，cfgst地址与&conf地址一致。
+      即两个变量存储着相同的寄存器地址，则在该寄存器地址上的数据改动，两个变量都会随之改变，即改变其中一个的，另一个也会跟着变动。
+*/
+static int terminal_switch_mode(char *reqst,int reqstLen,int *result)
+{
+    FILE *fp = NULL;
+	int ret = 1;
+	struct config_info_st *cfg;
+	char mode = 0;
+	struct config_info_st *cfgst;
+
+	cfgst = config_get(CONF_WRITE);
+	if (!cfgst)
+	{
+		printf("terminal_switch_mode:Get tipcore.conf file error.\n");
+        *result = 1;
+        return 1;
+	}
+    printf("terminal_switch_mode:ppp cfgst=%p,&conf=%p.\n",cfgst,&conf);
+/*
+    terminal_switch_mode:ppp cfgst=0x55bea7eec520,&conf=0x55bea7eec520.
+*/
+	
+    printf("terminal_switch_mode:1111  cfgst->mode=%d.\n",cfgst->mode);
+    printf("terminal_switch_mode:2222   conf.mode=%d.\n\n",conf.mode);
+    if(0 ==(strncmp("getOnlineModeState",reqst,reqstLen)))
+	{
+		/*
+			在tipcore.conf里面   查询新的状态
+		*/
+        if(cfgst->mode == 0)
+        {
+            ret = 3;
+        }
+        else if(cfgst->mode ==1)
+        {
+            ret = 2;
+        }
+        else
+        {
+            ret = 1;
+        }
+        *result = ret;
+        ret = 0;
+	
+	}
+    if(0 ==(strncmp("setOfflineMode",reqst,reqstLen)))
+	{
+		cfgst->mode = 0; 
+		printf("terminal_switch_mode:setOn-OfflineMode   conf.mode=%d.\n",conf.mode);
+		
+        printf("terminal_switch_mode:ppp setOfflineMode  cfgst=%p,&conf=%p.\n",cfgst,&conf);
+        setMode(1);
+		config_put();
+		ret = 0;
+		*result = 0;
+	}
+
+	if(0 ==(strncmp("setOnlineMode",reqst,reqstLen)))
+	{
+		cfgst->mode = 1;
+		printf("terminal_switch_mode:setOn-OfflineMode   conf.mode=%d.\n",conf.mode);
+		
+        printf("terminal_switch_mode:ppp setOnlineMode  cfgst=%p,&conf=%p.\n",cfgst,&conf);
+        setMode(1);
+		config_put();
+		ret = 0;
+        *result = 0;
+	}	
+   
+out:
+    return ret;
+
+}
+
+int tip_switch_mode(void)
+{
+	int ret = 1;
+	int result = 1;
+
+	ret = terminal_switch_mode("setOnlineMode",strlen("setOnlineMode"),&result);
+    if (ret == 1)
+	{
+		printf("tip_switch_mode:register error.\n");
+	}
+	else
+	{
+        ret = result;
+	}
+    printf("tip_switch_mode:register ret=%d.\n",ret);
+	return ret;
+}
+
+int return_cmp_test_tt(int value)
+{
+
+    return 1 == value;
+}
+
+int return_cmp_test(void)
+{
+    int ret = 100;
+    ret = return_cmp_test_tt(1);
+    printf("return_cmp_test: ret=%d.\n",ret);
+    
+    ret = return_cmp_test_tt(2);
+    printf("return_cmp_test: ret=%d.\n",ret);
+
+    ret = return_cmp_test_tt(0);
+    printf("return_cmp_test: ret=%d.\n",ret);
+    /*
+        return_cmp_test: ret=1.
+        return_cmp_test: ret=0.
+        return_cmp_test: ret=0.
+    */
+}
+
+
+
+#define offsetof2(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+ 
+/* include/linux/kernel.h:
+ * container_of - cast a member of a structure out to the containing structure
+ * @ptr: the pointer to the member.
+ * @type:	the type of the container struct this is embedded in.
+ * @member:    the name of the member within the struct.
+ *
+ */
+#define container_of2(ptr, type, member) ({	    \
+	const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
+	(type *)( (char *)__mptr - offsetof2(type,member) );})
+ 
+struct student {
+	char name[32];
+	int age;
+	double score;
+};
+ 
+int container_of_test(void)
+{
+	struct student *temp_jack;
+    struct student jack = {"jack", 18, 89.4};
+	//int *page = &(jack.age); 
+	double *pscore = &(jack.score); 
+	
+	//temp_jack = container_of2(page, struct student, age);
+	temp_jack = container_of2(pscore, struct student, score);
+	
+	printf("jack's name is %s\n",temp_jack->name);
+	printf("jack's age is %d\n",temp_jack->age);
+	printf("jack's score is %.2f\n",temp_jack->score);
+	/*
+        jack's name is jack
+        jack's age is 18
+        jack's score is 89.40
+	*/
+    return 0;
+}
+
+typedef struct new_node{
+	struct list_head list;
+	char pkg_name[512];
+	char pkg_type[32];
+}new_node_t;
+
+typedef struct new_node_tmp{
+	char pkg_name[512];
+	char pkg_type[32];
+}new_node_tmp_t;
+
+int list_container_test(void)
+{
+    int ret = 0;
+	struct list_head head;
+	struct list_head *pos;
+	struct list_head *p_list;
+	
+	INIT_LIST_HEAD(&head);
+	struct new_node *p_node = NULL;
+    new_node_tmp_t new_node_tmp_t[5] = {{"name0","tupe0"},{"name1","tupe1"},{"name2","tupe2"},{"name3","tupe3"},{"name4","tupe4"}};
+
+
+    for(int i = 0; i < 5;i++)
+    {
+        p_node = calloc(1,sizeof(struct new_node));
+        if(p_node == NULL){
+                printf("list_container_test:calloc err\n");
+        }
+        printf("list_container_test:new_node_tmp_t[%d].pkg_name=%s,new_node_tmp_t[%d].pkg_type=%s\n",i,new_node_tmp_t[i].pkg_name,i,new_node_tmp_t[i].pkg_type);
+        strncpy(p_node->pkg_name,new_node_tmp_t[i].pkg_name,32);
+        strncpy(p_node->pkg_type,new_node_tmp_t[i].pkg_type,32);
+		//list_add_tail(&(p_node->list),&head); /* fifo 队列 先进先出 */
+		list_add(&(p_node->list),&head);  /* 栈 先进后出 */
+    }
+    /*
+        list_container_test:new_node_tmp_t[0].pkg_name=name0,new_node_tmp_t[0].pkg_type=tupe0
+        list_container_test:new_node_tmp_t[1].pkg_name=name1,new_node_tmp_t[1].pkg_type=tupe1
+        list_container_test:new_node_tmp_t[2].pkg_name=name2,new_node_tmp_t[2].pkg_type=tupe2
+        list_container_test:new_node_tmp_t[3].pkg_name=name3,new_node_tmp_t[3].pkg_type=tupe3
+        list_container_test:new_node_tmp_t[4].pkg_name=name4,new_node_tmp_t[4].pkg_type=tupe4
+
+        list_add_tail: fifo 队列 先进先出
+        list_container_test:p_node->pkg_name=name0,p_node->pkg_type=tupe0
+        list_container_test:p_node->pkg_name=name1,p_node->pkg_type=tupe1
+        list_container_test:p_node->pkg_name=name2,p_node->pkg_type=tupe2
+        list_container_test:p_node->pkg_name=name3,p_node->pkg_type=tupe3
+        list_container_test:last one
+        list_container_test:p_node->pkg_name=name4,p_node->pkg_type=tupe4
+
+        list_add: 栈 先进后出
+        list_container_test:p_node->pkg_name=name4,p_node->pkg_type=tupe4
+        list_container_test:p_node->pkg_name=name3,p_node->pkg_type=tupe3
+        list_container_test:p_node->pkg_name=name2,p_node->pkg_type=tupe2
+        list_container_test:p_node->pkg_name=name1,p_node->pkg_type=tupe1
+        list_container_test:last one
+        list_container_test:p_node->pkg_name=name0,p_node->pkg_type=tupe0
+    */
+    printf("\n");
+
+    if(list_empty(&head)){//no need to process
+        printf("list_container_test:list_empty is empty\n");
+    }
+
+	list_for_each_safe(pos,p_list, &head)
+	//list_for_each(pos, &head) //使用此函数在调用list_del会段错误
+	{
+        printf("list_container_test:list_del 111 pos=%p\n",pos);
+		list_del(pos); //有此步才有list_empty 能判断到最后一个，否则无法判断到最后一个，也即head个数没变；
+        printf("list_container_test:list_del 222 pos=%p\n",pos);
+
+		if(list_empty(&head)){//last one
+            printf("list_container_test:last one\n");
+		}
+
+		p_node = container_of(pos,new_node_t,list);
+        printf("list_container_test:p_node->pkg_name=%s,p_node->pkg_type=%s\n",p_node->pkg_name,p_node->pkg_type);
+        
+        printf("list_container_test:container_of 111 p_node=%p\n",p_node);
+        if(p_node){
+            free(p_node);
+            p_node = NULL;
+        }
+        printf("list_container_test:container_of 222 p_node=%p\n",p_node);
+    }
+    return 0;
+}
+
+
+#define BOOST_PP_CAT(a, b) BOOST_PP_CAT_I(a, b)
+#define BOOST_PP_CAT_I(a, b) BOOST_PP_CAT_II(~, a ## b)
+#define BOOST_PP_CAT_II(p, res) res
+ 
+#define BOOST_PP_NUM 1
+#define BOOST_PP_ENUM_PARAMS(count, param) BOOST_PP_REPEAT(count, BOOST_PP_ENUM_PARAMS_M, param)
+#define BOOST_PP_REPEAT BOOST_PP_CAT(BOOST_PP_REPEAT_,BOOST_PP_NUM)
+ 
+#define BOOST_PP_REPEAT_1(c, m, d) BOOST_PP_REPEAT_1_I(c, m, d)
+#define BOOST_PP_REPEAT_1_I(c, m, d) BOOST_PP_REPEAT_1_ ## c(m, d)
+#define BOOST_PP_REPEAT_1_0(m, d)
+#define BOOST_PP_REPEAT_1_1(m, d) m(2, 0, d)
+#define BOOST_PP_REPEAT_1_2(m, d) BOOST_PP_REPEAT_1_1(m, d) m(2, 1, d)
+#define BOOST_PP_REPEAT_1_3(m, d) BOOST_PP_REPEAT_1_2(m, d) m(2, 2, d)
+#define BOOST_PP_REPEAT_1_4(m, d) BOOST_PP_REPEAT_1_3(m, d) m(2, 3, d)
+#define BOOST_PP_REPEAT_1_5(m, d) BOOST_PP_REPEAT_1_4(m, d) m(2, 4, d)
+#define BOOST_PP_REPEAT_1_6(m, d) BOOST_PP_REPEAT_1_5(m, d) m(2, 5, d)
+#define BOOST_PP_REPEAT_1_7(m, d) BOOST_PP_REPEAT_1_6(m, d) m(2, 6, d)
+#define BOOST_PP_REPEAT_1_8(m, d) BOOST_PP_REPEAT_1_7(m, d) m(2, 7, d)
+#define BOOST_PP_REPEAT_1_9(m, d) BOOST_PP_REPEAT_1_8(m, d) m(2, 8, d)
+#define BOOST_PP_REPEAT_1_10(m, d) BOOST_PP_REPEAT_1_9(m, d) m(2, 9, d)
+#define BOOST_PP_REPEAT_1_11(m, d) BOOST_PP_REPEAT_1_10(m, d) m(2, 10, d)
+#define BOOST_PP_REPEAT_1_12(m, d) BOOST_PP_REPEAT_1_11(m, d) m(2, 11, d)
+#define BOOST_PP_REPEAT_1_13(m, d) BOOST_PP_REPEAT_1_12(m, d) m(2, 12, d)
+#define BOOST_PP_REPEAT_1_14(m, d) BOOST_PP_REPEAT_1_13(m, d) m(2, 13, d)
+#define BOOST_PP_REPEAT_1_15(m, d) BOOST_PP_REPEAT_1_14(m, d) m(2, 14, d)
+#define BOOST_PP_REPEAT_1_16(m, d) BOOST_PP_REPEAT_1_15(m, d) m(2, 15, d)
+#define BOOST_PP_REPEAT_1_17(m, d) BOOST_PP_REPEAT_1_16(m, d) m(2, 16, d)
+#define BOOST_PP_REPEAT_1_18(m, d) BOOST_PP_REPEAT_1_17(m, d) m(2, 17, d)
+#define BOOST_PP_REPEAT_1_19(m, d) BOOST_PP_REPEAT_1_18(m, d) m(2, 18, d)
+#define BOOST_PP_REPEAT_1_20(m, d) BOOST_PP_REPEAT_1_19(m, d) m(2, 19, d)
+#define BOOST_PP_REPEAT_1_21(m, d) BOOST_PP_REPEAT_1_20(m, d) m(2, 20, d)
+#define BOOST_PP_REPEAT_1_22(m, d) BOOST_PP_REPEAT_1_21(m, d) m(2, 21, d)
+#define BOOST_PP_REPEAT_1_23(m, d) BOOST_PP_REPEAT_1_22(m, d) m(2, 22, d)
+#define BOOST_PP_REPEAT_1_24(m, d) BOOST_PP_REPEAT_1_23(m, d) m(2, 23, d)
+#define BOOST_PP_REPEAT_1_25(m, d) BOOST_PP_REPEAT_1_24(m, d) m(2, 24, d)
+ 
+//#define BOOST_PP_ENUM_PARAMS_M(z, n, param) BOOST_PP_COMMA_IF(n) param ## n
+#define BOOST_PP_ENUM_PARAMS_M(z, n, param) BOOST_PP_COMMA_IF(n) param 
+ 
+#define BOOST_PP_COMMA() ,
+#define BOOST_PP_EMPTY()
+#define BOOST_PP_COMMA_IF(cond) BOOST_PP_IF(cond, BOOST_PP_COMMA, BOOST_PP_EMPTY)()
+#define BOOST_PP_IF(cond, t, f) BOOST_PP_IIF(BOOST_PP_BOOL(cond), t, f)
+#define BOOST_PP_IIF(bit, t, f) BOOST_PP_IIF_I(bit, t, f)
+#define BOOST_PP_IIF_I(bit, t, f) BOOST_PP_IIF_ ## bit(t, f)
+#define BOOST_PP_IIF_0(t, f) f
+#define BOOST_PP_IIF_1(t, f) t
+#define BOOST_PP_BOOL(x) BOOST_PP_BOOL_I(x)
+#define BOOST_PP_BOOL_I(x) BOOST_PP_BOOL_ ## x
+ 
+#if 1
+#define BOOST_PP_BOOL_0 0
+#define BOOST_PP_BOOL_1 1
+#define BOOST_PP_BOOL_2 1
+#define BOOST_PP_BOOL_3 1
+#define BOOST_PP_BOOL_4 1
+#define BOOST_PP_BOOL_5 1
+#define BOOST_PP_BOOL_6 1
+#define BOOST_PP_BOOL_7 1
+#define BOOST_PP_BOOL_8 1
+#define BOOST_PP_BOOL_9 1
+#define BOOST_PP_BOOL_10 1
+#define BOOST_PP_BOOL_11 1
+#define BOOST_PP_BOOL_12 1
+#define BOOST_PP_BOOL_13 1
+#define BOOST_PP_BOOL_14 1
+#define BOOST_PP_BOOL_15 1
+#define BOOST_PP_BOOL_16 1
+#define BOOST_PP_BOOL_17 1
+#define BOOST_PP_BOOL_18 1
+#define BOOST_PP_BOOL_19 1
+#define BOOST_PP_BOOL_20 1
+#define BOOST_PP_BOOL_21 1
+#define BOOST_PP_BOOL_22 1
+#define BOOST_PP_BOOL_23 1
+#define BOOST_PP_BOOL_24 1
+#define BOOST_PP_BOOL_25 1
+#endif
+ 
+
+
+int define_function_0000_test()
+{
+    //test float num
+    printf("a=%f, b=%f, c=%f, d=%f \n", BOOST_PP_ENUM_PARAMS(4,0.));
+ 
+    //test int num
+    printf("e=%d, f=%d, g=%d, h=%d, i=%d ,j=%d\n", BOOST_PP_ENUM_PARAMS(6,0));
+
+    /*
+        a=0.000000, b=0.000000, c=0.000000, d=0.000000 
+        e=0, f=0, g=0, h=0, i=0
+    */
+    return 0;
+ 
+}
+ #include <stdio.h>
+#include <pthread.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <stdlib.h>
+
+int monitor_stack(void)
+{
+      size_t esp_val = 0;
+      pthread_attr_t attr;
+       void *stack_addr = NULL;
+      size_t stack_size = 0;
+      size_t available = 0;
+      size_t used = 0;
+      int ratio = 0;
+
+       memset(&attr, 0, sizeof(pthread_attr_t));
+   /* 获取栈地址和栈大小 */
+        if(pthread_getattr_np(pthread_self(), &attr)) {
+                printf("getattr failed.\n");
+                 return -1;
+          }
+         if(pthread_attr_getstack(&attr, &stack_addr, &stack_size)) {
+                 printf("getstack failed.\n");
+                  return -2;
+           }
+          pthread_attr_destroy(&attr);
+   /* 嵌入汇编获取栈指针的值 */
+           __asm__ __volatile__("movl %%esp, %0" : "=m"(esp_val) ::); /*x86架构，其他架构需要替换该行代码*/
+            printf("stack pointer is %#x \n", esp_val);
+
+             available = abs(esp_val - (size_t)stack_addr); /*计算栈可用空间*/
+             used = stack_size - available; /*计算栈已使用空间*/
+        ratio = (float)used/(float)stack_size * 100; /*计算栈空间使用率*/
+   /* 打印输出，当然也可以给到返回值或者出参 */
+         printf("avail is %d Byte; used is %d Byte;", available, used);
+          printf("ratio is %d%% \n", ratio);
+                    
+           return 0;
+}
+
+void sighandler(int sig) /*信号处理函数*/
+ {
+
+         if (SIGRTMAX == sig)
+                 (void)monitor_stack();/*进行栈空间使用率统计*/
+ 
+ }
+ #define NUM (1024 / 100 * 55) /*通过调整该值大小来调整栈空间使用率*/
+ 
+ void *thread1(void *args) /*目标线程函数体*/
+ {
+          char c[8192*NUM]; /*通过控制该变量大小来调试栈空间使用率*/
+          for (;;) {
+                 printf("thread1 alive.\n");
+                 sleep(100);
+         }
+ }
+ 
+ int kk(pthread_t tid) /*负责给目标线程发送触发信号*/
+ {
+          if (pthread_kill(tid, SIGRTMAX)) {
+                 printf("signal sent to thread1 failed.\n");
+                 return -1;
+         }
+          return 0;
+  }
+
+ /* 栈空间 stack 使用率  栈空间使用率实时监测工具 */
+ int stack_test(void)
+ {
+         char a = 0;
+         pthread_t tid1;
+
+         /* 安装信号处理函数；这里使用的是SIGRTMAX信号，你可以选择自己喜欢的其他信号 */
+         if (SIG_ERR == signal(SIGRTMAX, &sighandler)) {
+                perror("");
+                  exit(-1);
+         }
+         if (pthread_create(&tid1, NULL, thread1, NULL)) {/*创建一个线程（这就是我们统计栈空间的目标线程）*/
+                 printf("create thread1 failed.\n");
+                exit(-2);
+         }
+         sleep(1); /*改行代码的目的是等待我们创建的线程运行稳定；否则第一次统计的栈空间占用率不准确*/
+ 
+          for (;;) {
+                 printf("main alive.\n");
+                 if (kk(tid1)) /*调用kk指令*/
+                          exit(-3);
+                  sleep(1); /*发送周期为1s*/
+         }
+
+
+ /*
+ root@jion-virtual-machine:/home/jion# ./test11 
+ thread1 alive.
+ main alive.
+ stack pointer is 0x5c38cfe0 
+ avail is 3874784 Byte; used is 4513824 Byte;ratio is 53% 
+ 
+ thread1 alive.
+ main alive.
+ stack pointer is 0x5c38cfe0 
+ avail is 3874784 Byte; used is 4513824 Byte;ratio is 53% 
+ 
+ thread1 alive.
+ main alive.
+ stack pointer is 0x5c38cfe0 
+ avail is 3874784 Byte; used is 4513824 Byte;ratio is 53% 
+ 
+ thread1 alive.
+ main alive.
+ stack pointer is 0x5c38cfe0 
+ avail is 3874784 Byte; used is 4513824 Byte;ratio is 53% 
+ thread1 alive.
+
+
+ */
+         return 0;
+ }
+
+/*  宏定义中#和##符号的用法: #和##在宏定义中使用时，它后面的参数如果也是一个宏，那么是不会展开的  */
+/* 1. 一个#的作用就是把后面的参数当做一个字符串，也就是说等同于把后面的宏变量加上双引号 */
+#define PRINT(name) printf(#name)
+int jinghao_shuangjinghao_tt1()
+{
+    PRINT(jinghao_shuangjinghao_tt1: hello world 11\n);
+    printf("\n");
+    printf("jinghao_shuangjinghao_tt1: hello world 22\n\n");
+
+    /*
+    jinghao_shuangjinghao_tt1: hello world 11
+    
+    jinghao_shuangjinghao_tt1: hello world 22
+    */
+    return 0;
+}
+
+/* 2.两个##是连接符，即把两个宏变量拼接到一起，看下面的例子： */
+#define LINK2(AA,BB)  AA##BB
+#define POWER(AA,BB)  AA##e##BB
+//#define POWER(AA,BB)  AA##11##BB    2113
+
+int jinghao_shuangjinghao_tt2()
+{
+    int n1 = LINK2(12,34);
+    int n2 = POWER(2,3);
+    
+    printf("jinghao_shuangjinghao_tt2:n1=%d\n",n1);
+    printf("jinghao_shuangjinghao_tt2:n2=%d\n\n",n2);
+
+    /*
+    jinghao_shuangjinghao_tt2:n1=1234
+    jinghao_shuangjinghao_tt2:n2=2000    2e3=2*10*10*10=2000
+    定义了两个宏LINK和POWER，LINK直接把两个宏变量拼接起来，所以n等于1234；POWER把两个宏变量和e顺次拼接，所以n2等于2e3，也就是等于2000�
+    �
+
+    */
+    return 0;
+}
+/* 3. #和##在宏定义中使用时，它后面的参数如果也是一个宏，那么是不会展开的:解决办法是再定义一个宏，做一个中间转换： */
+#define A 12
+#define B 34
+//#define LINK(AA,BB)  AA##BB    //编译错误
+#define LINK55(AA,BB)  AA##BB
+#define LINK3(AA,BB)  LINK55(AA,BB)
+int jinghao_shuangjinghao_tt3()
+{
+    int n1 = LINK3(A,B);    
+    printf("jinghao_shuangjinghao_tt3:n1=%d\n",n1);
+    
+    int n2 = LINK3(55,B);
+    printf("jinghao_shuangjinghao_tt3:n2=%d\n",n2);
+    /*
+    jinghao_shuangjinghao_tt3:n1=1234
+    jinghao_shuangjinghao_tt3:n2=5534
+    */
+    return 0;
+}
+
+
+int jinghao_shuangjinghao()
+{
+    jinghao_shuangjinghao_tt1();
+    jinghao_shuangjinghao_tt2();
+    jinghao_shuangjinghao_tt3();
+
+
+    return 0;
+}
+
+
+
+
+#define DEPLIST_MAX			1024
+struct node
+{
+	char fullpath[1024];
+	struct node *next;
+};
+
+struct nlist
+{
+	int count;
+	struct node *head;
+	struct node *tail;
+};
+
+void initialize_list(struct nlist *list)
+{
+	list->count = 0;
+	list->head = NULL;
+	list->tail = NULL;	
+
+	return ;	
+}
+
+int add_to_list(struct nlist *list,struct node node)
+{
+	int ret = 0;
+	struct node *p  = NULL;
+		
+	p = (struct node*)malloc(sizeof(struct node));
+
+	if(p == NULL){
+		ret = -1;
+		goto out;
+	}		
+
+	memcpy(p->fullpath,node.fullpath,256);
+	p->next = NULL;
+
+	if(list->count == 0){
+		list->head = p;
+		list->tail = p;
+			
+	}else{
+		list->tail->next = p;
+		list->tail = p;
+	}
+	
+	list->count++;
+out:
+	return ret;
+}
+
+int del_all_list(struct nlist list)
+{
+	int ret = 0;
+	int i = 0;
+	struct node *p_tmp  = NULL;
+
+	for(i;i<list.count;i++){
+		if(list.head){
+			p_tmp = list.head;	
+			list.head = list.head->next;
+			free(p_tmp);
+		}else{
+			if((i+1) != list.count){
+				ret = -1;
+				break;//err	
+			}
+		}
+	}
+	
+	list.count = 0;	
+out:
+	return ret;	
+}
+
+void travel_deb_list(struct nlist list)
+{
+	int i = 0;	
+	char pkgname[OBJECTS_LENGTH] = {0};
+	char version[OBJECTS_LENGTH] = {0};
+	struct node *p_tmp  = NULL;
+	struct node *p_process = NULL;
+	
+	unsigned char soft_id_param[64+1] = {0};//for 64   
+
+	if(list.head){
+		p_tmp = list.head;
+	}
+
+	for(i;i<list.count;i++){
+		if(p_tmp){
+			memset(soft_id_param,0,sizeof(soft_id_param));	
+			p_process = p_tmp;
+			printf("node :%d %s\n",i+1,p_process->fullpath);
+			if(access(p_process->fullpath,R_OK) != 0){
+				printf("not exist!\n");
+			}else{
+				memset(pkgname,0,sizeof(pkgname));
+				memset(version,0,sizeof(version));
+
+			}
+			p_tmp = p_tmp->next;	
+		}
+	}
+	
+}
+
+
+void travel_list(struct nlist list,char *dep_list)
+{
+	int i = 0;	
+	char deplist[1024] = {0};
+	char pkgname[OBJECTS_LENGTH] = {0};
+	char version[OBJECTS_LENGTH] = {0};
+	struct node *p_tmp  = NULL;
+	struct node *p_process = NULL;
+
+#ifdef 	DIGEST_64
+	unsigned char soft_id_param[64+1] = {0};//
+
+#else
+	unsigned char soft_id_param[32+1] = {0};//tmp just for kylin
+#endif	
+
+	if(list.head){
+		p_tmp = list.head;
+	}
+
+	for(i;i<list.count;i++){
+		if(p_tmp){
+			memset(soft_id_param,0,sizeof(soft_id_param));	
+			p_process = p_tmp;
+			printf("node :%d %s\n",i+1,p_process->fullpath);
+			if(access(p_process->fullpath,R_OK) != 0){
+				printf("not exist!\n");
+			}else{
+				memset(pkgname,0,sizeof(pkgname));
+				memset(version,0,sizeof(version));
+				
+				strcat(deplist,pkgname);
+				strcat(deplist,":");
+
+			//	busicmd("1",soft_id_param);
+			//	printf(" exist!\n");
+			}
+			p_tmp = p_tmp->next;	
+		}
+	}
+	
+	memcpy(dep_list,deplist,strlen(deplist)+1);
+}
+
+#define BCD_TO_BIN(val) ((val)=((val)&15) + ((val)>>4)*10)
+
+void BCD_TO_BIN_test(void)
+{
+    int val =300;
+    printf("BCD_TO_BIN_test 111:val=%d\n",val);
+    BCD_TO_BIN(val);
+    printf("BCD_TO_BIN_test 222:val=%d\n",val);
+    /*
+        BCD_TO_BIN_test 111:val=300
+        BCD_TO_BIN_test 222:val=192
+    */
+    return;
+}
+
+//typedef unsigned __int32 uint32_t;
+
+#define simple_hash(name) ({                                         \
+    register unsigned char *__hash_source = (unsigned char *)(name); \
+    register uint32_t __hash_value = 0x811c9dc5;                     \
+    while (*__hash_source) {                                         \
+        __hash_value *= 16777619;                                    \
+        __hash_value ^= (uint32_t) *__hash_source++;                 \
+    }                                                                \
+    __hash_value;                                                    \
+})
+
+void simple_hash_test(void)
+{
+    uint32_t hash = 0;
+    hash = simple_hash("aaaabbb");
+    printf("simple_hash_test:aaaabbb hash=%d\n",hash);
+    /*
+
+        simple_hash_test:aaaabbb hash=-1564424367
+
+    */
+
+}
+
+#define likely(x) __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
+pid_t pid_max = 32768;
+
+void likely_unlikely_test(void)
+{
+    static char read = 0;
+    printf("000 likely_unlikely_test:unlikely(read) =%d\n",unlikely(read));
+    if(unlikely(read))
+    {
+        printf("111 likely_unlikely_test:unlikely pid_max =%d\n",pid_max);
+        return pid_max;
+    }
+    if(likely(read))
+    {
+        printf("222 likely_unlikely_test:likely pid_max =%d\n",pid_max);
+        return pid_max;
+    }
+
+    static char read1 = 'a';
+    printf("333 likely_unlikely_test:unlikely(read1) =%d\n",unlikely(read1));
+    if(unlikely(read1))
+    {
+        printf("444 likely_unlikely_test:unlikely pid_max =%d\n",pid_max);
+        //return pid_max;
+    }
+    if(likely(read1))
+    {
+        printf("555 likely_unlikely_test:likely pid_max =%d\n",pid_max);
+        //return pid_max;
+    }
+
+    /*
+        000 likely_unlikely_test:unlikely(read) =0
+        333 likely_unlikely_test:unlikely(read1) =1
+        444 likely_unlikely_test:unlikely pid_max =32768
+        555 likely_unlikely_test:likely pid_max =32768
+
+    */
+
+    int job_id = 49;
+    if(unlikely(job_id >= 50))
+    {
+        job_id = 0;
+        printf("666111 likely_unlikely_test:job_id =%d\n",job_id);
+    }
+    else
+    {
+        printf("666222 likely_unlikely_test:job_id =%d\n",job_id);
+    }
+
+    int job_id1 = 59;
+    if(unlikely(job_id1 >= 50))
+    {
+        job_id1 = 0;
+        printf("7777111 likely_unlikely_test:job_id1 =%d\n",job_id1);
+    }
+    else
+    {
+        printf("7777222 likely_unlikely_test:job_id1 =%d\n",job_id1);
+    }
+
+    return;
+}
+
+void addr_get_addr_test1( int *one1,  char *two1)
+{
+    int one2 = 5;
+    char *two2 = "bbb";
+
+    *one1 = one2 ;
+    strncpy(two1,two2,3);
+    return;
+}
+void addr_get_addr_test()
+{
+
+    int one1 = 11;
+    char two1[100] = "aaaaa";
+
+    printf("1111 addr_get_addr_test,one1='%d',two1='%s'\n",one1,two1);
+
+    addr_get_addr_test1(&one1, two1);
+
+    printf("2222 addr_get_addr_test,one1='%d',two1='%s'\n",one1,two1);
+
+    /*
+        1111 addr_get_addr_test,one1='11',two1='aaaaa'
+        2222 addr_get_addr_test,one1='5',two1='bbbaa'
+    */
+
+
+    int static_threaded1 = (2 == 2);
+    
+    printf("3333 addr_get_addr_test,static_threaded1='%d'\n",static_threaded1);
+    int static_threaded2 = (2 == 5);
+    
+    printf("4444 addr_get_addr_test,static_threaded2='%d'\n",static_threaded2);
+    /*
+
+        3333 addr_get_addr_test,static_threaded1='1'
+        4444 addr_get_addr_test,static_threaded2='0'
+
+    */
+    
+    return 0;
+}
+
+#include <stdio.h>
+#include <stdarg.h>
+
+void WriteFrmtd(char *format, ...)
+{
+   va_list args;
+   
+   va_start(args, format);
+   vprintf(format, args);
+   va_end(args);
+}
+
+int vprintf_test ()
+{
+   WriteFrmtd("%d variable argument\n", 1);
+   WriteFrmtd("%d variable %s\n", 2, "arguments");
+   /*
+       1 variable argument
+       2 variable arguments
+   */
+   return(0);
+}
+
+#if 1
+typedef struct avl_element {
+    struct avl_element *avl_link[2];  /* Subtrees. */
+    signed char avl_balance;       /* Balance factor. */
+} avl_t;
+
+typedef struct avl_tree_type {
+    avl_t *root;
+    int (*compar)(void *a, void *b);
+} avl_tree_type;
+
+typedef struct avl_tree_lock {
+    avl_tree_type avl_tree;
+
+} avl_tree_lock;
+
+struct config {
+    struct section *first_section;
+    struct section *last_section; // optimize inserting at the end
+    avl_tree_lock index;
+};
+struct config_option {
+    avl_t avl_node;         // the index entry of this entry - this has to be first!
+
+    uint8_t flags;
+    uint32_t hash;          // a simple hash to speed up searching
+                            // we first compare hashes, and only if the hashes are equal we do string comparisons
+
+    char *name;
+    char *value;
+
+    struct config_option *next; // config->mutex protects just this
+};
+struct section {
+    avl_t avl_node;         // the index entry of this section - this has to be first!
+
+    uint32_t hash;          // a simple hash to speed up searching
+                            // we first compare hashes, and only if the hashes are equal we do string comparisons
+
+    char *name;
+
+    struct section *next;    // global config_mutex protects just this
+
+    struct config_option *values;
+    avl_tree_lock values_index;
+
+};
+
+
+int appconfig_section_compare(void *a, void *b) 
+{
+    if(((struct section *)a)->hash < ((struct section *)b)->hash) return -1;
+    else if(((struct section *)a)->hash > ((struct section *)b)->hash) return 1;
+    else return strcmp(((struct section *)a)->name, ((struct section *)b)->name);
+}
+
+#if 0
+static inline uint32_t simple_hash(const char *name) {
+    unsigned char *s = (unsigned char *) name;
+    uint32_t hval = 0x811c9dc5;
+    while (*s) {
+        hval *= 16777619;
+        hval ^= (uint32_t) *s++;
+    }
+    return hval;
+}
+#endif
+
+avl_t *avl_search(avl_tree_type *tree, avl_t *item) {
+    avl_t *p;
+
+    // assert (tree != NULL && item != NULL);
+    if(tree->root == NULL)
+    {
+        printf("avl_search:tree->root == NULL\n");
+    }
+
+    for (p = tree->root; p != NULL; ) {
+        int cmp = tree->compar(item, p);
+
+        if (cmp < 0)
+            p = p->avl_link[0];
+        else if (cmp > 0)
+            p = p->avl_link[1];
+        else /* |cmp == 0| */
+            return p;
+    }
+
+    return NULL;
+}
+
+avl_t *avl_search_lock(avl_tree_lock *tree, avl_t *item) {
+    avl_t *ret = avl_search(&tree->avl_tree, item);
+    return ret;
+}
+
+static struct section *appconfig_index_find(struct config *root, const char *name, uint32_t hash) {
+    struct section tmp;
+    tmp.hash = (hash)?hash:simple_hash(name);
+    tmp.name = (char *)name;
+
+    return (struct section *)avl_search_lock(&root->index, (avl_t *) &tmp);
+}
+
+static inline struct section *appconfig_section_find(struct config *root, const char *section) {
+    return appconfig_index_find(root, section, 0);
+}
+void avl_init(avl_tree_type *tree, int (*compar)(void * /*a*/, void * /*b*/)) {
+    tree->root = NULL;
+    tree->compar = compar;
+}
+char *strdupz(const char *s) {
+    char *t = strdup(s);
+    if (unlikely(!t)) printf("Cannot strdup() string '%s'", s);
+    return t;
+}
+
+void avl_init_lock(avl_tree_lock *tree, int (*compar)(void * /*a*/, void * /*b*/)) {
+    avl_init(&tree->avl_tree, compar);
+}
+static int appconfig_option_compare(void *a, void *b) {
+    if(((struct config_option *)a)->hash < ((struct config_option *)b)->hash) return -1;
+    else if(((struct config_option *)a)->hash > ((struct config_option *)b)->hash) return 1;
+    else return strcmp(((struct config_option *)a)->name, ((struct config_option *)b)->name);
+}
+
+avl_t *avl_insert(avl_tree_type *tree, avl_t *item) {
+    avl_t *y, *z; /* Top node to update balance factor, and parent. */
+    avl_t *p, *q; /* Iterator, and parent. */
+    avl_t *n;     /* Newly inserted node. */
+    avl_t *w;     /* New root of rebalanced subtree. */
+    unsigned char dir; /* Direction to descend. */
+
+    unsigned char da[92]; /* Cached comparison results. */
+    int k = 0;              /* Number of cached results. */
+
+    // assert(tree != NULL && item != NULL);
+
+    z = (avl_t *) &tree->root;
+    y = tree->root;
+    dir = 0;
+    for (q = z, p = y; p != NULL; q = p, p = p->avl_link[dir]) {
+        int cmp = tree->compar(item, p);
+        if (cmp == 0)
+            return p;
+
+        if (p->avl_balance != 0)
+            z = q, y = p, k = 0;
+        da[k++] = dir = (unsigned char)(cmp > 0);
+    }
+
+    n = q->avl_link[dir] = item;
+
+    // tree->avl_count++;
+    n->avl_link[0] = n->avl_link[1] = NULL;
+    n->avl_balance = 0;
+    if (y == NULL) return n;
+
+    for (p = y, k = 0; p != n; p = p->avl_link[da[k]], k++)
+        if (da[k] == 0)
+            p->avl_balance--;
+        else
+            p->avl_balance++;
+
+    if (y->avl_balance == -2) {
+        avl_t *x = y->avl_link[0];
+        if (x->avl_balance == -1) {
+            w = x;
+            y->avl_link[0] = x->avl_link[1];
+            x->avl_link[1] = y;
+            x->avl_balance = y->avl_balance = 0;
+        }
+        else {
+            // assert (x->avl_balance == +1);
+            w = x->avl_link[1];
+            x->avl_link[1] = w->avl_link[0];
+            w->avl_link[0] = x;
+            y->avl_link[0] = w->avl_link[1];
+            w->avl_link[1] = y;
+            if (w->avl_balance == -1)
+                x->avl_balance = 0, y->avl_balance = +1;
+            else if (w->avl_balance == 0)
+                x->avl_balance = y->avl_balance = 0;
+            else /* |w->avl_balance == +1| */
+                x->avl_balance = -1, y->avl_balance = 0;
+            w->avl_balance = 0;
+        }
+    }
+    else if (y->avl_balance == +2) {
+        avl_t *x = y->avl_link[1];
+        if (x->avl_balance == +1) {
+            w = x;
+            y->avl_link[1] = x->avl_link[0];
+            x->avl_link[0] = y;
+            x->avl_balance = y->avl_balance = 0;
+        }
+        else {
+            // assert (x->avl_balance == -1);
+            w = x->avl_link[0];
+            x->avl_link[0] = w->avl_link[1];
+            w->avl_link[1] = x;
+            y->avl_link[1] = w->avl_link[0];
+            w->avl_link[0] = y;
+            if (w->avl_balance == +1)
+                x->avl_balance = 0, y->avl_balance = -1;
+            else if (w->avl_balance == 0)
+                x->avl_balance = y->avl_balance = 0;
+            else /* |w->avl_balance == -1| */
+                x->avl_balance = +1, y->avl_balance = 0;
+            w->avl_balance = 0;
+        }
+    }
+    else return n;
+
+    z->avl_link[y != z->avl_link[0]] = w;
+
+    // tree->avl_generation++;
+    return n;
+}
+
+avl_t *avl_insert_lock(avl_tree_lock *tree, avl_t *item) {
+    avl_t * ret = avl_insert(&tree->avl_tree, item);
+    return ret;
+}
+void *callocz(size_t nmemb, size_t size) {
+    void *p = calloc(nmemb, size);
+    if (unlikely(!p)) printf("callocz：111 Cannot allocate %zu bytes of memory.\n", nmemb * size);
+    return p;
+}
+void freez(void *ptr) {
+    free(ptr);
+}
+
+#define appconfig_index_add(root, cfg) (struct section *)avl_insert_lock(&(root)->index, (avl_t *)(cfg))
+
+static inline struct section *appconfig_section_create(struct config *root, const char *section) {
+    printf("appconfig_section_create：111 Creating section '%s'.\n", section);
+
+    struct section *co = callocz(1, sizeof(struct section));
+    co->name = strdupz(section);
+    co->hash = simple_hash(co->name);
+
+    avl_init_lock(&co->values_index, appconfig_option_compare);
+
+    if(unlikely(appconfig_index_add(root, co) != co))
+        printf("appconfig_section_create：222 INTERNAL ERROR: indexing of section '%s', already exists.\n", co->name);
+
+    struct section *co2 = root->last_section;
+    if(co2) {
+        co2->next = co;
+    } else {
+        root->first_section = co;
+    }
+    root->last_section = co;
+    printf("appconfig_section_create：222 Creating section '%s'.\n", section);
+
+    return co;
+}
+static struct config_option *appconfig_option_index_find(struct section *co, const char *name, uint32_t hash) {
+    struct config_option tmp;
+    tmp.hash = (hash)?hash:simple_hash(name);
+    tmp.name = (char *)name;
+
+    return (struct config_option *)avl_search_lock(&(co->values_index), (avl_t *) &tmp);
+}
+#define appconfig_option_index_add(co, cv) (struct config_option *)avl_insert_lock(&((co)->values_index), (avl_t *)(cv))
+
+static inline struct config_option *appconfig_value_create(struct section *co, const char *name, const char *value) {
+    printf("appconfig_value_create：1111 Creating config entry for name '%s', value '%s', in section '%s'.\n", name, value, co->name);
+
+    struct config_option *cv = callocz(1, sizeof(struct config_option));
+    cv->name = strdupz(name);
+    cv->hash = simple_hash(cv->name);
+    cv->value = strdupz(value);
+
+    struct config_option *found = appconfig_option_index_add(co, cv);
+    if(found != cv) {
+        printf("indexing of config '%s' in section '%s': already exists - using the existing one.\n", cv->name, co->name);
+        freez(cv->value);
+        freez(cv->name);
+        freez(cv);
+        return found;
+    }
+
+    struct config_option *cv2 = co->values;
+    if(cv2) {
+        while (cv2->next) cv2 = cv2->next;
+        cv2->next = cv;
+    }
+    else co->values = cv;
+
+    return cv;
+}
+
+char *appconfig_get_by_section(struct section *co, const char *name, const char *default_value)
+{
+    struct config_option *cv;
+    printf("\nappconfig_get_by_section: 111 Creating name '%s'.\n", name);
+
+    // Only calls internal to this file check for a NULL result and they do not supply a NULL arg.
+    // External caller should treat NULL as an error case.
+    cv = appconfig_option_index_find(co, name, 0);
+    if (!cv) {
+        if (!default_value) return NULL;
+        cv = appconfig_value_create(co, name, default_value);
+        if (!cv) return NULL;
+    }
+    cv->flags |= 0x02;
+
+    if((cv->flags & 0x01) || (cv->flags & 0x04)) {
+        // this is a loaded value from the config file
+        // if it is different than the default, mark it
+        if(!(cv->flags & 0x08)) {
+            if(default_value && strcmp(cv->value, default_value) != 0) cv->flags |= 0x04;
+            cv->flags |= 0x08;
+        }
+    }
+    printf("appconfig_get_by_section: 222 Creating cv->value '%s'.\n\n", cv->value);
+
+    return(cv->value);
+}
+
+char *appconfig_get(struct config *root, const char *section, const char *name, const char *default_value)
+{
+    if (default_value == NULL)
+        printf("appconfig_get:1111  section '%s', name '%s' or fail\n", section, name);
+    else
+        printf("appconfig_get:2222  section '%s', name '%s', default_value '%s'\n", section, name, default_value);
+
+    struct section *co = appconfig_section_find(root, section);
+    if (!co && !default_value)
+    {
+        printf("appconfig_get:3333 request to get config in section '%s', name '%s' or fail\n", section, name);
+        return NULL;
+    }
+    if(!co) co = appconfig_section_create(root, section);
+
+    return appconfig_get_by_section(co, name, default_value);
+
+}
+
+struct config netdata_config = {
+        .index = {
+                .avl_tree = {
+                        .root = NULL,
+                        .compar = appconfig_section_compare
+                }
+        }
+};
+
+long long appconfig_get_number(struct config *root, const char *section, const char *name, long long value)
+{
+    char buffer[100], *s;
+    sprintf(buffer, "%lld", value);
+    printf("appconfig_get_number:1111  section '%s', name '%s',buffer '%s' \n", section, name,buffer);
+
+    s = appconfig_get(root, section, name, buffer);
+    if(!s) return value;
+    printf("appconfig_get_number:222   s= '%s'\n",s);
+
+    return strtoll(s, NULL, 0);
+}
+
+#define config_get_number(section, name, value) appconfig_get_number(&netdata_config, section, name, value)
+#define config_get(section, name, default_value) appconfig_get(&netdata_config, section, name, default_value)
+
+void appconfig_get_test()
+{
+    printf("appconfig_get_test:1111 start \n");
+    //printf("1111 request to get config in section avl_link[0]='%d',avl_balance=%s\n", 
+    //(int)netdata_config.index.avl_tree.root->avl_link[0],(char *)netdata_config.index.avl_tree.root->avl_balance);
+
+    int update_every = (int)config_get_number("plugin:timex", "update every", 10);
+    printf("appconfig_get_test:222 config_get_number [plugin:timex, update every, 10]update_every =%d\n",update_every);
+
+    
+    printf("\n---------------appconfig_get_test:---------11111111111-------- \n");
+    
+    int maxdim ;
+    maxdim = (int)appconfig_get_number(&netdata_config, "web", "default port", 20);
+    printf("appconfig_get_test:333 request to get config in section default_port maxdim =%d\n",maxdim);
+    int maxdim1 ;
+    maxdim1 = (int)appconfig_get_number(&netdata_config, "web", "default port", 30);
+    printf("appconfig_get_test:333 request to get config in section default_port maxdim1 =%d\n",maxdim1);
+
+    printf("\n---------------appconfig_get_test:---------222222222-------- \n");
+    
+    char *default_port = appconfig_get(&netdata_config, "web", "default port", "nnn");
+    printf("appconfig_get_test:444 request to get config in section default_port=%s\n",default_port);
+    //printf("appconfig_get_test:555 request to get config in section avl_link[0]='%d',avl_balance=%s\n", 
+    //            (int)netdata_config.index.avl_tree.root->avl_link[0],(char *)netdata_config.index.avl_tree.root->avl_balance);
+
+    printf("\n---------------appconfig_get_test:---------33333333333-------- \n");
+
+    
+    char *flags = config_get("logs", "debug flags",  "0x0000000000000004");
+    //setenv("NETDATA_DEBUG_FLAGS", flags, 1);
+    
+    printf("appconfig_get_test:6666 %s\n", flags);
+    int debug_flags = strtoull(flags, NULL, 0);
+    printf("appconfig_get_test:Debug flags set to '0x%'. debug_flags=%d \n", debug_flags, debug_flags);
+    return 0;
+}
+
+#endif
+
+#if 0
+#include <unistd.h>
+#include <stdio.h>
+#include <pwd.h>
+//#include <uv.h>
+
+
+char exepath[100 + 1];
+
+void get_netdata_execution_path(void)
+{
+    int ret;
+    size_t exepath_size = 0;
+    struct passwd *passwd = NULL;
+    char *user = NULL;
+
+    passwd = getpwuid(getuid());
+    user = (passwd && passwd->pw_name) ? passwd->pw_name : "";
+
+    exepath_size = sizeof(exepath) - 1;
+    ret = uv_exepath(exepath, &exepath_size);
+    if (0 != ret) {
+        printf("[error]: \t\tuv_exepath(\"%s\", %u) (user: %s) failed (%s).", exepath, (unsigned)exepath_size, user,
+              uv_strerror(ret));
+        printf("[fatal]: \t\tCannot start netdata without getting execution path.");
+    }
+    exepath[exepath_size] = '\0';
+}
+
+int get_netdata_execution_path_test()
+{
+    get_netdata_execution_path();
+    printf("get_netdata_execution_path_test:exepath=[%s]\n", exepath);
+}
+#endif
+
+static inline char *strncpyz(char *dst, const char *src, size_t n) {
+    char *p = dst;
+
+    while (*src && n--)
+        *dst++ = *src++;
+
+    *dst = '\0';
+
+    return p;
+}
+
+void foe_test()
+{
+    //char *s = "*";
+    char *s = "udp:localhost tcp:localhost";
+
+    while(*s) {
+        char *e = s;
+
+        // skip separators, moving both s(tart) and e(nd)
+        while(isspace(*e) || *e == ',') s = ++e;
+
+        // move e(nd) to the first separator
+        while(*e && !isspace(*e) && *e != ',') e++;
+
+        // is there anything?
+        if(!*s || s == e) break;
+
+        char buf[e - s + 1];
+        strncpyz(buf, s, e - s);
+        printf("foe_test:buf=[%s]\n",buf);
+
+/*
+    foe_test:buf=[udp:localhost]
+    foe_test:buf=[tcp:localhost]
+*/
+        s = e;
+    }
+
+
+
+}
 void main()
 {
-    int index = 2;
-    printf("main:index=%d\n",index);
-    define_function_test(index++);
-
+    init_all_softlist_info_test();
 
 #if 0 
+    foe_test();
+    appconfig_get_test();
+    likely_unlikely_test();
+    addr_get_addr_test();
+    likely_unlikely_test();
+    simple_hash_test();
+    BCD_TO_BIN_test();
+    jinghao_shuangjinghao();
+    stack_test();
+
+    pthread_test();/* 多线程调用测试 */
+    define_function_0000_test();
+    list_container_test();
+    container_of_test();
+    return_cmp_test();
+
+    tip_switch_mode();
+
+    policy_spsoftwarelist_find_test();
+
+    sscanf_test();
+    handle_cmd_msg();
+    define_function_test();
+    define_define_function_test();
+    fork_test();
+    callback_pre_test();
+
+    function_get_function_nest();
+    rpmtsAddInstallElement_test();
+    move_test(1<<0);
+    move_test(1<<1);
+    move_test(1<<2);
+
+    init_all_softlist_info_test();
+
+    int index = 2;
+    printf("main:index=%d\n",index);
+    index_function_test(index++);
+    printf("main:index=%d\n",index);
+    index_function_test(index++);
+
+
+    int pri=3;
+    int saverec = (pri <= 2);
+    printf(":saverec=%d\n",saverec);
+    saverec = (pri <= 4);
+    printf(":saverec=%d\n",saverec);
+    /*
+        :saverec=0
+        :saverec=1
+    */
+
     va_start_test();
     audit_home_page_callback_test();
     strstr_test();
     if_else_if_test();
 
-    init_all_softlist_info_test();
     strcpy_memcpy_test();
     soft_multiversion_check("zlib");
     
-    pthread_test();
     abort_test();
     printf("main\n");
     
@@ -3935,25 +7303,17 @@ void main()
     popen_program_locale_test();
 
 
-    fork_test();
-
     strtol_test();
     
     strtok_test();
 
 
-    sscanf_test();
-
     int intem = 0;
     char *ptemp = "caccecwcw";
     {
         printf("main:111 %s\n",ptemp);
-
-
     }
     printf("main:222 %s\n",ptemp);
-
-
 
     ioctl_io();
     char *stringcode = (char *)malloc(20);
@@ -3984,12 +7344,9 @@ void main()
     struct sys_port *p = (struct sys_port *)malloc(sizeof(struct sys_port) * 30);
     retval = get_tcp_port(p, &loc);
 
-
     test_popen();
 
-
     while_test();
-
 
     retval = get_udp_port(p, loc);
     printf("main: get_tcp_port:p[0] port=%x,program=%s,proto=%s,loc=%d\n",p->port,p->program,p->proto,loc);
@@ -4043,7 +7400,6 @@ void main()
     getcpu_test(cpu, sizeof(cpu));
     printf("main:cpu=%s\n",cpu);
 
-    
     rand_test();
 
 	char buff[256] = "hello world";
@@ -4072,9 +7428,7 @@ void main()
     retval = readn_test("/home/ly/tst/pathtestf",getstore,25);
     printf("main readn_test: retval=%d,getstore=%s\n",retval,getstore);
     
- 
     math_test();
-
 
     string_valid_check("ada_bbtbb_F2-c.c");
     string_valid_check("_bbtbb_cfcc");
@@ -4088,12 +7442,10 @@ void main()
     
     string_valid_check("查__查查查查");
     
-
     test_mallocaddr_struct_information();
     
     test_fun();
     test_str_sub_str_len();
-
 
     test_notify_callback();
     
