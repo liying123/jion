@@ -3462,7 +3462,7 @@ ops_err:
                     phead = ptemp;
                     printf("111 add_count=%d\n",add_count);
                 } else {
-                    //方法一 插到后的头插法
+                    //方法一 链表头不变的头插法  新插入的值都插入到链表头后的头插法
                     //ptemp->pnext = phead->pnext;
                     //phead->pnext = ptemp;
                     /*                    
@@ -3476,7 +3476,7 @@ ops_err:
                         pall_softlist_test:ptemp->name:[upower];verinfo:[0.99.4-4.rb2];softarch:[amd64]
                         pall_softlist_test:ptemp->name:[tasksel];verinfo:[3.39-0.rb1];softarch:[all]
                     */
-                    //方法二 头插法
+                    //方法二 链表头变的头插法 新插入的值都成为新链表头的头插法
                     //ptemp->pnext = phead;
                     //phead = ptemp;
                     /*

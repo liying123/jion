@@ -51,9 +51,10 @@ $ git branch --查看当前分支
 $ git merge dev --将dev分支合并到master主分支上
 $ git branch -d dev --删除当前dev分支
 
-
+git reset commitId  回滚提交的commid，重新添加git commit -m "****"说明
+git reset --hard HEAD^ --版本回退（HEAD^指每个版本的版本号或者commit id）
 ##############################  GIT常规操作：：########################################################
-
+首先找到版本对应的commitid:ddc01a5649ea1b3821c3900650edaf91ab0bbc46  ,然后切换到此commitid :git checkout ddc01a5649ea1b3821c3900650edaf91ab0bbc46
 
 过滤器是 -S（俗称“pickaxe”选项，取“用鹤嘴锄在土里捡石头”之意）， 它接受一个字符串参数，并且只会显示那些添加或删除了该字符串的提交。
 假设你想找出添加或删除了对某一个特定函数的引用的提交，可以调用：
