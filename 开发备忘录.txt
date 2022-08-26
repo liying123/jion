@@ -1,0 +1,1164 @@
+密码  jion.2021  或者jion,2021
+
+liying123  2011
+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
+
+git remote set-url origin  https://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@github.com/liying123/jion.git
+将<your_token>换成你自己得到的令牌。<USERNAME>是你自己github的用户名，<REPO>是你的项目名称
+换成你自己得到的令牌。是你自己github的用户名，`是你的项目名称
+
+https://github.com/liying123/jion.git/
+
+
+ssh jion@192.168.3.223
+
+
+######################### vim粘贴对齐 #########################
+vim: 如何使粘贴到vim的代码排列整齐
+
+一般的vim都默认设置为set nopaste。在粘贴前设置：
+set paste使得vim进入粘贴模式，则粘贴过来的内容能够保持原来的格式。
+1.  vim 文件  进去，然后:set paste   【在:下 set paste】
+2. 直接粘贴即可
+
+
+######################### linux内核打补丁步骤 #########################
+1， 打补丁之前需要准备好原始文件和补丁文件，例如给linux系统打补丁需要准备好linux-2.6.22.6.tar.bz2（原始文件）和linux-2.6.22.6_jz2440.patch（补丁文件）,
+2， 将这两个文件放到linux系统的一个文件夹下如/work/system目录下
+3， 解压原文件  tar xjf linux-2.6.22.6.tar.bz2
+4， 进入解压后的源文件文件夹   cd linux-2.6.22.6
+5， 打补丁  patch -p1 < ../linux-2.6.22.6_jz2440.patch
+6， 将打好补丁的文件压缩后再移动到Windows下 tar cjf linux-2.6.22.6_jz2440.tar.bz2
+linux-2.6.22.6
+7， 再进入源文件的解压目录 cdlinux-2.6.22.6
+8， 配置 cp  config_ok .config
+9， 编译创建uImage      make uImage
+
+
+.bz2结尾的文件是bzip2压缩的结果。
+tar命令使用-j这个参数来调用gzip压缩或者解压缩.tar.bz2。
+压缩
+tar -cjf images.tar.bz2 ./images/
+解压缩
+tar -xjf images.tar.bz2
+
+
+######################### 解决CentOS 8关于无法执行yum命令的问题 ######################
+最近在学习Linux的时候遇到以下一个错误，就是在使用yum命令进行下载的时候会出现这个错误，一番百度之后，找到一些解决方案，关于检查网络连接、关闭防火墙、更改镜像等，但是这些对我都没什么用；
+最恶心的是找到的净是一些粘贴复制的文章，浪费时间不说还解决不了问题；最后不得已只能自己尝试，最终解决问题。在这里插入图片描述
+
+先说解决方案：
+使用root权限，找到/etc/yum.repos.d这个文件夹，里面有三个重要的文件
+CentOS-Linux-AppStream.repo
+CentOS-Linux-BaseOS.repo
+CentOS-Linux-Extras.repo
+
+为了防止操作失误导致文件不可用，可以先进行备份
+cp CentOS-Linux-AppStream.repo CentOS-Linux-AppStream.repo.backup
+cp CentOS-Linux-BaseOS.repo CentOS-Linux-BaseOS.repo.backup
+cp CentOS-Linux-Extras.repo CentOS-Linux-Extras.repo.backup
+
+然后使用vim命令分别打开这三个文件，将其中的mirrorlist注释掉，将baseurl放开，并分别将这三个文件的baseurl的值改为
+baseurl=https://mirrors.aliyun.com/centos/8-stream/AppStream/$basearch/os/
+baseurl=https://mirrors.aliyun.com/centos/8-stream/BaseOS/$basearch/os/
+baseurl=https://mirrors.aliyun.com/centos/8-stream/extras/$basearch/os/
+
+做完这些你就会发现yum命令可以用了，就是这么简单
+然后来说一下原因：
+在解决问题前需要确定你的网络连接真的没问题，当网络连接不上时，也会出现问题，检查网络是否连接成功，可以ping一下百度的网站
+ping baidu.com
+
+
+
+
+$是普通管员，#是系统管理员，在Ubuntu下，root用户默认是没有密码的，因此也就无法使用（据说是为了安全）。想用root的话，得给root用户设置一个密码：
+在终端中输入：
+sudo passwd root
+
+解压：
+tar -xvf webmin-current.tar.gz
+rm -f webmin-current.tar.gz
+压缩：
+tar -cvf netdata.gz netdata/
+
+
+#########################  makefile脚本： ######################
+targets : prerequisites
+ command
+$@  表示目标文件
+$^  表示所有的依赖文件
+$<  表示第一个依赖文件
+$?  表示比目标还要新的依赖文件列表
+$% 当目标文件是一个静态库文件时，代表静态库的一个成员名。仅当目标是函数库文件中，表示规则中的目标成员名。
+   例如，如果一个目标是“foo.a(bar.o)”，那么，“$%”就是“bar.o”，“$@”就是“foo.a”。
+   如果目标不是函数库文件（Unix下是[.a]，Windows下是[.lib]），那么，其值为空。
+$+ 这个变量很像“$^”，也是所有依赖目标的集合。只是它不去除重复的依赖目标。
+$* 这个变量表示目标模式中“%”及其之前的部分。如果目标是“dir/a.foo.b”，
+   并且目标的模式是“a.%.b”，那么，“$*”的值就是“dir/a.foo”。这个变量对于
+   构造有关联的文件名是比较有较。如果目标中没有模式的定义，那么“$*”也就不能被推导出，
+   但是，如果目标文件的后缀是make所识别的，那么“$*”就是除了后缀的那一部分。
+   例如：如果目标是“foo.c”，因为“.c”是make所能识别的后缀名，所以，“$*”的值就是“foo”。
+   这个特性是GNU make的，很有可能不兼容于其它版本的make，所以，你应该尽量避免使用“$*”，
+   除非是在隐含规则或是静态模式中。如果目标中的后缀是make所不能识别的，那么“$*”就是空值。
+
+ifeq 判断参数是否不相等，相等为 true，不相等为 false。
+ifneq 判断参数是否不相等，不相等为 true，相等为 false。
+ifdef 判断是否有值，有值为 true，没有值为 false。
+ifndef 判断是否有值，没有值为 true，有值为 false。
+
+【静态库、动态库】Linux中动态链接库是.so为后缀的文件，静态链接库是.a为后缀的文件，.a和.so文件都叫做函数库文件。
+静态链接：静态链接就是，在生成可执行程序的时候，把目标文件.o 和 静态库 .a ，使用 ld 链接器，链接生成一个可执行程序。这是在程序加载前就完成的动作。
+动态链接：动态链接就是，在生成可执行程序的时候，只是引用的未定义的符号作了标识，到加载到内存中的时候才进行符号重定位。
+==静态链接库的创建：
+使用 gcc -c Lib.c 命令生成 Lib.o 文件。
+再用 ar cr LIb.a Lib.o 来生成一个静态库。
+==动态链接库的创建：
+gcc -fpic -shared -o Lib.so Lib.c 来生成一个动态库 Lib.so.
+#生成动态库 libsocketc.so.
+libsocketc:socket_client.c
+ gcc -fpic -shared -o libsocketc.so socket_client.c
+makefile 动态库使用：make执行使用libxxx.so前，需要把libxxx.so拷贝到/usr/lib/下
+socket_test:socket_test.c
+ gcc -g -o socket_test socket_test.c -lpthread -L. -lsocketc
+ 
+【vpath】再运行make，最终得到prog程序。除了VPATH外，还可以使用vpath，用法如下：
+1. vpath pattern directories
+2. vpath pattern
+3. vpath
+第一个用法用于指定搜索目录，后两个用法用于清除搜索目录，例如：
+# Makefile
+CC      = gcc
+OBJ     = main.o foo.o bar.o
+CPPFLAGS= -Iinclude
+#VPATH  = src:include
+vpath %.h include
+vpath %.c src
+prog:$(OBJ)
+ $(CC) -o $@ $(OBJ)
+%.o:%.c
+ $(CC) $(CPPFLAGS) -c $<
+main.o:foo.h bar.h
+.PHONY:clean
+clean:
+ -rm -f prog $(OBJ)
+通常程序并不只存放在同一个目录下，例如：
+├── include
+│   ├── bar.h
+│   └── foo.h
+├── Makefile
+└── src
+    ├── bar.c
+    ├── foo.c
+    └── main.c
+
+【wildcard、notdir、patsubst】在Makefile规则中，通配符会被自动展开。但在变量的定义和函数引用时，通配符将失效。这种情况下如果需要通配符有效，就需
+
+
+【wildcard、notdir、patsubst】在Makefile规则中，通配符会被自动展开。但在变量的定义和函数引用时，通配符将失效。这种情况下如果需要通配符有效，就需要使用函数“wildcard”，
+它的用法是：$(wildcard PATTERN...) 。在Makefile中，它被展开为已经存在的、使用空格分开的、匹配此模式的所有文件列表。如果不存在任何符合此模式的文件，
+函数会忽略模式字符并返回空。需要注意的是：这种情况下规则中通配符的展开和上一小节匹配通配符的区别。
+一般我们可以使用“$(wildcard *.c)”来获取工作目录下的所有的.c文件列表。复杂一些用法；可以使用“$(patsubst %.c,%.o,$(wildcard *.c))”，
+首先使用“wildcard”函数获取工作目录下的.c文件列表；之后将列表中所有文件名的后缀.c替换为.o。这样我们就可以得到在当前目录可生成的.o文件列表。
+因此在一个目录下可以使用如下内容的Makefile来将工作目录下的所有的.c文件进行编译并最后连接成为一个可执行文件：
+#sample Makefile
+objects := $(patsubst %.c,%.o,$(wildcard *.c))
+foo : $(objects)
+ cc -o foo $(objects)
+这里我们使用了make的隐含规则来编译.c的源文件。对变量的赋值也用到了一个特殊的符号（:=）。
+1、wildcard : 扩展通配符
+2、notdir ： 去除路径
+3、patsubst ：替换通配符
+例子：
+建立一个测试目录，在测试目录下建立一个名为sub的子目录
+$ mkdir test
+$ cd test
+$ mkdir sub
+在test下，建立a.c和b.c2个文件，在sub目录下，建立sa.c和sb.c2 个文件
+建立一个简单的Makefile
+src=$(wildcard *.c ./sub/*.c)
+dir=$(notdir $(src))
+obj=$(patsubst %.c,%.o,$(dir) )
+all:
+ @echo $(src)
+ @echo $(dir)
+ @echo $(obj)
+ @echo "end"
+执行结果分析：
+第一行输出：
+a.c b.c ./sub/sa.c ./sub/sb.c
+wildcard把 指定目录 ./ 和 ./sub/ 下的所有后缀是c的文件全部展开。
+第二行输出：
+a.c b.c sa.c sb.c
+notdir把展开的文件去除掉路径信息
+第三行输出：
+a.o b.o sa.o sb.o
+在$(patsubst %.c,%.o,$(dir) )中，patsubst把$(dir)中的变量符合后缀是.c的全部替换成.o，
+任何输出。
+或者可以使用
+obj=$(dir:%.c=%.o)
+
+
+【CFLAGS、LDFLAGS、LIBS +=】
+#gcc -g -lglib-2.0  -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/ -o dbus_signal_send dbus_signal_send.c
+CC = gcc
+CC_FLAGS = $(shell pkg-config --cflags glib-2.0 gthread-2.0 dbus-1 dbus-glib-1)
+CC_FLAGS += -std=c99 -g
+LD_FLAGS = $(shell pkg-config --libs glib-2.0 gthread-2.0 dbus-1 dbus-glib-1)
+CFLAGS=-I/usr/include -I/path/include
+LDFLAGS=-L/usr/lib -L/path/to/your/lib
+LIBS = -lpthread -liconv 
+
+  3 CFLAGS += -I./usbModule/include -DTIP_PORTING -DTESTW
+  4 LDFLAGS += -L. -L./libs -L../tipcomm
+  5 LIBS += -ltipcore -ltipcomm -lhttcsec -lhttcca -lhttccasm2 -lwjelement -lwjreader -lwjwriter -lxpl  -lcurl
+  6 LIBS +=  -lelf -lserver
+  7 #-lislsds 
+  8 #LIBS += -lusb-1.0
+  9 LIBS += -lpthread -lm  -lsqlite3
+
+
+CFLAGS ： 指定头文件（.h文件）的路径，如：CFLAGS=-I/usr/include -I/path/include。同样地，安装一个包时会在安装路径下建立一个include目录，当安装过程中出现问题时，
+   试着把以前安装的包的include目录加入到该变量中来。 
+LDFLAGS ： gcc 等编译器会用到的一些优化参数，也可以在里面指定库文件的位置。用法： LDFLAGS=-L/usr/lib -L/path/to/your/lib。每安装一个包都几乎一定的会在安装目录里建立一个lib目录。
+  如果明明安装了某个包，而安装另一个包时，它愣是说找不到，可以抒那个包的lib路径加入的LDFALGS中试一下。 
+LIBS ：告诉链接器要链接哪些库文件，如 LIBS = -lpthread -liconv 
+【CFLAGS】宏定义-D
+关键词: Make宏定义 Make传递宏定义 Makefile中添加宏定义 Makefile -D
+在Makefile中我们可以通过宏定义来控制源程序的编译。只要在Makefile中的CFLAGS中通过选项-D来指定你于定义的宏即可。
+如:CFLAGS += -D_YUQIANG   
+CFLAGS  += -DRRU_COMPILE_COMPRESS_160M
+在编译的时候加上此选项就可以了： $(CC) $(CFLAGS) $^ -o $@
+int main()
+{
+#ifdef _YUQIANG
+printf("Hello Yu Qiang, How are you?/n");
+#else
+printf("Sorry to lost you. /n");
+#endif
+}
+运行结果：Hello Yu Qiang, How are you?
+
+
+
+【LDFLAGS】
+1.LDFLAGS是告诉链接器从哪里寻找库文件，而LIBS是告诉链接器要链接哪些库文件。不过使用时链接阶段这两个参数都会加上，所以你即使将这两个的值互换，也没有问题。 
+2.有时候LDFLAGS指定-L虽然能让链接器找到库进行链接，但是运行时链接器却找不到这个库，如果要让软件运行时库文件的路径也得到扩展，那么我们需要增加这两个库给"-Wl,R"： 
+   LDFLAGS = -L/var/xxx/lib -L/opt/mysql/lib -Wl,R/var/xxx/lib -Wl,R/opt/mysql/lib 
+3.如果在执行./configure以前设置环境变量export LDFLAGS="-L/var/xxx/lib -L/opt/mysql/lib -Wl,R/var/xxx/lib -Wl,R/opt/mysql/lib" ，注意设置环境变量等号两边不可以有空格，
+  而且要加上引号（shell的用法）。那么执行configure以后，Makefile将会设置这个选项，链接时会有这个参数，编译出来的可执行程序的库文件搜索路径就得到扩展了。
+【LIBS +=】
+makefile语法是 LIBS+= : LIBS+= -L直接打地址 -l直接打库名
+注意点：-L后面没有空格，直接跟着地址，然后地址空格，-l后面是去掉lib之后的文件名。
+一个例子：如我们有E:\CLibraries\NewmatL\debug\libNewmatL.a这个文件，则：
+LIBS += -LE:\CLibraries\NewmatL\debug\ -lNewmatL
+
+【-I、-L、-l】
+“-I”（大写i），“-L”（大写l），“-l”（小写l）等参数，下面做个记录：
+例：gcc -o hello hello.c -I /home/hello/include -L/home/hello/lib -lworld
+-I /home/hello/include表示将/home/hello/include目录作为第一个寻找头文件的目录，寻找的顺序是：/home/hello/include-->/usr/include-->/usr/local/include
+-L /home/hello/lib表示将/home/hello/lib目录作为第一个寻找库文件的目录，寻找的顺序是：/home/hello/lib-->/lib-->/usr/lib-->/usr/local/lib
+-lworld表示在上面的lib的路径中寻找libworld.so动态库文件（如果gcc编译选项中加入了“-static”表示寻找libworld.a静态库文件）
+【CFLAGS <-> -I、LDFLAGS <-> -L、LIBS <-> -l】
+
+
+
+#################  linux shell脚本： ###################
+$#：传入脚本的参数个数；
+$0: 脚本自身的名称；　　
+$1: 传入脚本的第一个参数；
+$2: 传入脚本的第二个参数；
+$[10]: 传入脚本的第10个参数；
+$@: 传入脚本的所有参数；
+$*：传入脚本的所有参数；
+$$: 脚本执行的进程id；
+$?: 上一条命令执行后的状态，结果为0表示执行正常，结果为1表示执行异常；
+其中$@与$*正常情况下一样，当在脚本中将$*加上双引号作为“$*”引用时，此时将输入的所有参数当
+做一个整体字符串对待。比如输入参数有a b c三个参数，则“$*”表示“a b c”一个字符串。
+
+$# 传递到脚本的参数个数
+$* 以一个单字符串显示所有向脚本传递的参数。
+如"$*"用「"」括起来的情况、以"$1 $2 … $n"的形式输出所有参数。
+$$ 脚本运行的当前进程ID号
+$! 后台运行的最后一个进程的ID号
+$@ 与$*相同，但是使用时加引号，并在引号中返回每个参数。
+如"$@"用「"」括起来的情况、以"$1" "$2" … "$n" 的形式输出所有参数。
+$- 显示Shell使用的当前选项，与set命令功能相同。
+$? 显示最后命令的退出状态。0表示没有错误，其他任何值表明有错误。
+
+sort -u  shell去重
+
+sudo find / -name rsfile*
+
+grep "String" filename.txt
+#字符串  文件名
+grep -r "String" /home/
+#递归查找目录下所有文件
+
+#define offsetof(type, field) (long)&(((type*)0)->field)
+在不生成结构体实例的情况下计算结构体成员的偏移量：
+结构体变量的某成员的地址等于该结构体变量的基址加上结构体成员变量在结构体中的偏移量
+(type*)0;就是假设地址0处存放的是一个type类型的结构体变量
+这样的话这个结构体变量的基址就是0，所以结构体成员变量的地址的大小在数值上就等于该结构体成员在结构体中的偏移量
+define offsetof(TYPE, MEMBER) ((size_t) &((TYPE*)0)->MEMBER)
+define offsetof(TYPE, MEMBER) ( (size_t) &( ((TYPE *)3264)->MEMBER ) - 3264 )
+以上代码中没有使用 0 ，而是使用的 3264 ，所以绝对地址要减去3264才是该成员相对于结构体首地址的偏移地址，当然实际使用中我们都是用的是 0 。
+
+typedef struct sys_softlist_node {
+    char name[256];
+    char verinfo[64];
+    char softarch[64];
+    struct sys_softlist_node *pnext;
+}sys_soft_node,*ps_node;
+
+	ps_node phead = NULL;
+    ps_node ptemp = NULL;
+ptemp = (ps_node)malloc(sizeof(struct sys_softlist_node));
+if (NULL == ptemp) {
+	printf("malloc error\n");
+}
+memset(ptemp, 0, sizeof(struct sys_softlist_node));
+
+if (0 == add_count) {
+	phead = ptemp;   第一个放到表头，
+} else {
+   /* 方法一:链表头不变的头插法  新插入的值都插入到链表头后的头插法,  之后都紧接着表头插入到表头后面和之前已经插入的数据中间，即新插入的都紧跟表头   工程代码中使用*/
+   ptemp->pnext = phead->pnext;
+   phead->pnext = ptemp;
+  
+   /* 方法二:链表头变的头插法 新插入的值都成为新链表头的头插法,    之后都插入到表头成为表头， */
+   ptemp->pnext = phead;
+   phead = ptemp;
+   
+   /* 方法三:尾插法  之后都插入到表的尾部， */
+   除非先查找尾部，再进行插入
+	//一定使用phead1做中间转换，否则无法记录到所有链表，导致部分链表数据丢失
+	//while(NULL!=phead->pnext) 此种处理只能记录最后两个  upower zenity-common
+	//{
+	//   phead = phead->pnext;
+	//}
+	//   phead->pnext = ptemp;
+
+	//正确为： insert_tail(phead,ptemp);
+	ps_node phead1 = phead;
+	while(NULL != phead1->pnext)
+	{
+	phead1 = phead1->pnext;
+	}
+	phead1->pnext = ptemp;
+
+	  
+   add_count++;
+}
+
+void insert_tail(ps_node head,ps_node new)
+{
+    //第一步  先找到链表中的最后一个节点
+    ps_node phead = head;
+    while(NULL != phead->pnext)
+    {
+        phead = phead->pnext;
+    }
+    //第二步 将新节点插入到最后
+    phead->pnext = new;
+}
+
+
+eg:
+accountsservice_0.6.43-1.rb2_amd64
+tasksel_3.39-0.rb1_all
+upower_0.99.4-4.rb2_amd64
+zenity-common_3.22.0.1+1cdos1_all
+方法一：
+ptemp->pnext = phead->pnext;
+phead->pnext = ptemp;
+pall_softlist_test:ptemp->name:[accountsservice];verinfo:[0.6.43-1.rb2];softarch:[amd64]
+pall_softlist_test:ptemp->name:[zenity-common];verinfo:[3.22.0.1+1cdos1];softarch:[all]
+pall_softlist_test:ptemp->name:[upower];verinfo:[0.99.4-4.rb2];softarch:[amd64]
+pall_softlist_test:ptemp->name:[tasksel];verinfo:[3.39-0.rb1];softarch:[all]
+
+方法二：
+ptemp->pnext = phead;
+phead = ptemp;
+pall_softlist_test:ptemp->name:[zenity-common];verinfo:[3.22.0.1+1cdos1];softarch:[all]
+pall_softlist_test:ptemp->name:[upower];verinfo:[0.99.4-4.rb2];softarch:[amd64]
+pall_softlist_test:ptemp->name:[tasksel];verinfo:[3.39-0.rb1];softarch:[all]
+pall_softlist_test:ptemp->name:[accountsservice];verinfo:[0.6.43-1.rb2];softarch:[amd64]
+
+方法三：
+	ps_node phead1 = phead;
+	while(NULL != phead1->pnext)
+	{
+	phead1 = phead1->pnext;
+	}
+	phead1->pnext = ptemp;
+pall_softlist_test:ptemp->name:[accountsservice];verinfo:[0.6.43-1.rb2];softarch:[amd64]
+pall_softlist_test:ptemp->name:[tasksel];verinfo:[3.39-0.rb1];softarch:[all]
+pall_softlist_test:ptemp->name:[upower];verinfo:[0.99.4-4.rb2];softarch:[amd64]
+pall_softlist_test:ptemp->name:[zenity-common];verinfo:[3.22.0.1+1cdos1];softarch:[all]
+
+
+========================================================================================================================================================
+==============================================   工作备忘录  ==========================================================================================================
+========================================================================================================================================================
+离线导入的功能在安全管理员下:
+/etc/redhat-release加这样一个文件
+处理离线导入的业务逻辑:
+ImportHttcThread::run()
+离线导入的入口，也就是那个添加按钮的响应函数
+sltOfflineImportClicked
+
+/opt/softmanager/tipterminal/bin/UserTypeProfile.xml 
+<?xml version="2.1"?>
+<!--userType = 1  系统管理员 -->
+<!--userType = 2  安全管理员 -->
+<!--userType = 3  审计管理员 -->
+<UserProfile xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             userType="2"/>
+
+通过userType来的值来选择启动对应用户的客户端。先killall httcgui ,然后把userType=1即是系统用户配置，此时./httcgui启动，则就是系统管理员的配置管理
+
+20220812  周五
+netdata
+1.fdsvr和lxdeb的相关socid的httcpermissivemode版本打包，自验证运行、安装与卸载自测，socid列表文档更新整理归档，代码提交。
+2.netdat源码main主函数的初始化流程梳理，相关业务线程的创建、初始化和调用执行的逻辑策略走读研究与分析。业务线程中的业务功能流程研究梳理，数据处理逻辑分析等。
+
+sudo apt install zlib1g-dev gcc make git autoconf autogen automake pkg-config uuid-dev
+git clone https://github.com/firehol/netdata.git --depth=1
+cd netdata
+sudo ./netdata-installer.sh
+
+
+ulimit -a
+
+   
+main.c: main  
+static_threads = static_threads_get();
+static_threads_get =》 1. static_threads_common  =》  analytics_main  =》 analytics_gather_mutable_meta_data  =》         analytics_set_data(&analytics_data.netdata_allmetrics_prometheus_used, b);
+
+                                                 =》 aclk_starter  =》 aclk_main  =》 aclk_init_rx_msg_handlers  =》 find_rx_handler_by_hash =》 rx_msgs ：
+												                                                                                                    { .name = "DisconnectReq", .name_hash = 0, .fnc = handle_disconnect_req 
+																																					。。。。。。
+																																					=》 handle_disconnect_req =》 disconnect_req=1
+                       												               =》 handle_connection  =》 netdata_exit => mqtt_wss_service 
+																				                                              disconnect_req
+																				   => aclk_graceful_disconnect => mqtt_wss_service
+												 => rrdcontext_main => rrdcontext_message_send_unsafe => ctx_store_context => db_context_meta
+												 => statsd_main :STATSD => statsd_listen_sockets_setup => listen_sockets_setup(&statsd.sockets) : statsd.sockets = {
+																																									.config          = &netdata_config,
+																																									.config_section  = CONFIG_SECTION_STATSD,
+																																									.default_bind_to = "udp:localhost tcp:localhost",
+																																									.default_port    = STATSD_LISTEN_PORT,
+																																									.backlog         = STATSD_LISTEN_BACKLOG
+																																									},
+																										     => listen_sockets_init: sockets
+																										     => bind_to_this:sockets  => listen_sockets_add : sockets->fds[sockets->opened] = fd;
+																																						      sockets->fds_types[sockets->opened] = socktype;
+																																							  sockets->fds_families[sockets->opened] = family;
+																																							  sockets->fds_names[sockets->opened] = strdup_client_description(family, protocol, ip, port);
+																																							  sockets->fds_acl_flags[sockets->opened] = acl_flags;
+																																							  sockets->opened++;
+
+																		=> statsd_collector_thread => poll_events(&statsd.sockets.....)
+																		
+												 => socket_listen_main_static_threaded : WEB_SERVER[static1] => socket_listen_main_static_threaded_worker => 
+												  
+                       2. static_threads_linux  => proc_main  => 1).netdev_main => do_proc_net_dev => rrdset_update_rrdlabels => chart_label_store_to_sql_callback => sql_store_chart_label : db_meta 、 sql_store_label(res, chart_uuid, source_type, label, value)
+						                                         2).proc_modules ： enabled=1 、 netdata_exit=0  =》 proc_modules : func ：
+												// system metrics
+												{.name = "/proc/stat",    .dim = "stat",    .func = do_proc_stat},
+												{.name = "/proc/uptime",  .dim = "uptime",  .func = do_proc_uptime},
+												{.name = "/proc/loadavg", .dim = "loadavg", .func = do_proc_loadavg},
+												。。。。。。
+												// memory metrics
+												{.name = "/proc/meminfo",    .dim = "meminfo",   .func = do_proc_meminfo},
+												。。。。。。
+											     =》 do_proc_meminfo: [do_ram do_swap do_hwcorrupt do_committed do_writeback do_kernel do_slab do_hugepages do_transparent_hugepages]
+											         do_ram:
+											                 1.rrdset_create_localhost  => rrdset_create(localhost...) => rrdset_create_custom => update_chart_metadata => db_meta => sql_store_chart(chart_uuid, &st->rrdhost->host_uuid, st->type, id, name, st->family, st->context, st->title, st->units, st->plugin_name,st->module_name, st->priority, st->update_every, st->chart_type, st->rrd_memory_mode, st->entries)
+															                                                                                   => rrdset_memory_load_or_create_map_save
+																																			   => store_active_chart
+																																		       => rrdcontext_updated_rrdset => rrdinstance_from_rrdset => dictionary_set_and_acquire_item:st->rrdhost->rrdctx
+													         2.rrddim_add   => rrddim_add_custom => sql_store_dimension
+																							     => rrdcontext_updated_rrddim  => rrdmetric_from_rrddim => dictionary_set_and_acquire_item
+															                                     => netdata_mmap : rd->db = netdata_mmap
+																								 => find_dimension_uuid => db_meta:chart_uuid 、 id 、 name
+																							     => storage_engine_get => engines: {
+																																	.id = RRD_MEMORY_MODE_NONE,
+																																	.name = RRD_MEMORY_MODE_NONE_NAME,
+																																	.api = {
+																																		.init = rrddim_metric_init,
+																																		.free = rrddim_metric_free,
+																																		.collect_ops = im_collect_ops,
+																																		.query_ops = im_query_ops
+																																	}
+																																}
+																																.....
+																																im_collect_ops => #define im_collect_ops { \
+																																						.init = rrddim_collect_init,\
+																																						.store_metric = rrddim_collect_store_metric,\
+																																						.flush = rrddim_store_metric_flush,\
+																																						.finalize = rrddim_collect_finalize\
+																																					}
+																							     => store_active_dimension => db_meta:dimension_uuid
+																							   => rd->tiers[tier]->db_collection_handle = rd->tiers[tier]->collect_ops.init(rd->tiers[tier]->db_metric_handle);
+
+													         3.rrddim_set_by_pointer	=>  rd 
+															 4.rrdset_done  =>  1).rrdset_reset =》 rd->tiers[tier]->collect_ops.flush(rd->tiers[tier]->db_collection_handle)
+															                    2).rrdset_done_push =》 rrdpush_sender_thread_spawn  =>  rrdpush_sender_thread => attempt_read => recv
+																				                                                                                  attempt_to_send => send
+                                                  								3).rrdset_done_interpolate
+											  
+web_client_api_v1_init: api_v1_data_options
+                        api_v1_data_formats
+						api_v1_data_google_formats
+						web_client_api_v1_init_grouping : api_v1_data_groups :{
+																				{.name = "average",
+																						.hash  = 0,
+																						.value = RRDR_GROUPING_AVERAGE,
+																						.init  = NULL,
+																						.create= grouping_create_average,
+																						.reset = grouping_reset_average,
+																						.free  = grouping_free_average,
+																						.add   = grouping_add_average,
+																						.flush = grouping_flush_average,
+																						.tier_query_fetch = TIER_QUERY_FETCH_AVERAGE
+																				},
+																				{.name = "mean",                           // alias on 'average'
+																						.hash  = 0,
+																						.value = RRDR_GROUPING_AVERAGE,
+																						.init  = NULL,
+																						.create= grouping_create_average,
+																						.reset = grouping_reset_average,
+																						.free  = grouping_free_average,
+																						.add   = grouping_add_average,
+																						.flush = grouping_flush_average,
+																						.tier_query_fetch = TIER_QUERY_FETCH_AVERAGE
+																				},
+																				incremental_sum
+																				incremental-sum
+																				median
+																				min
+																				max
+																				sum
+																				stddev
+																				cv
+																				rsd
+																				.......
+																			   }
+																				
+
+web_server_threading_selection  =》 static_threads[i].start_routine==socket_listen_main_static_threaded  =》 2. static_threads[i].enabled = static_threaded;
+                                                                                                             1. static_threads[i].start_routine == socket_listen_main_static_threaded)  =》 
+								socket_listen_main_static_threaded_worker =》 poll_events:( api_sockets
+																						   web_server_add_callback
+																						   web_server_del_callback
+																						   web_server_rcv_callback => web_client_receive(w)
+                     																						          web_client_process_request => a. rrdpush_receiver_thread_spawn => rrdpush_receiver_thread: => 1).worker_register
+																																																				 2).rrdpush_receive =>  rrdhost_find_or_create : rrdhost_create => sql_store_host_info => db_meta
+																																																															  : rrdhost_update => sql_store_host_system_info
+																																																									   rrdhost_update  => sql_store_host_system_info
+																																																				 3).worker_unregister
+
+                                                            							                                                         =》 b. web_client_process_url =》 web_client_api_request =》 web_client_api_request_v1 : api_commands : 
+																																																						{ "info",            0, WEB_CLIENT_ACL_DASHBOARD, web_client_api_request_v1_info            },
+																																																						{ "data",            0, WEB_CLIENT_ACL_DASHBOARD, web_client_api_request_v1_data            },
+																																																						{ "chart",           0, WEB_CLIENT_ACL_DASHBOARD, web_client_api_request_v1_chart           },
+																																																						{ "charts",          0, WEB_CLIENT_ACL_DASHBOARD, web_client_api_request_v1_charts          },
+																																																						{ "context",         0, WEB_CLIENT_ACL_DASHBOARD, web_client_api_request_v1_context         },
+																																																						。。。。。。
+																																																						=》 web_client_api_request_v1_info =》  web_client_api_request_v1_info_fill_buffer =》 analytics_get_data(analytics_data.netdata_config_multidb_disk_quota, wb)
+
+																																												  web_client_switch_host  
+																							web_server_snd_callback => web_client_send(w) 
+																							.......
+																							, worker_private->max_sockets
+																			                )
+																							
+																			  poll_events => poll_add_fd (&p
+																										   , sockets->fds[i]
+																										   , sockets->fds_types[i]
+																										   , sockets->fds_acl_flags[i]
+																										   , POLLINFO_FLAG_SERVER_SOCKET
+																										   , (sockets->fds_names[i])?sockets->fds_names[i]:"UNKNOWN"
+																										   , ""
+																										   , ""
+																										   , p.add_callback
+																										   , p.del_callback
+																										   , p.rcv_callback
+																										   , p.snd_callback
+																										   , NULL
+																				                          )
+																			  
+																			                while(!netdata_exit) => poll_process_send
+																													 poll_process_udp_read
+																													 poll_process_tcp_read
+																						                             poll_process_new_tcp_connection => poll_add_fd[accept ok]
+
+api_listen_sockets_setup  =》 listen_sockets_setup(&api_sockets) ： netdata_config  =》 bind_to_this    => create_listen_socket4 
+					                                                                                    => create_listen_socket6
+																										=> listen_sockets_add :     sockets->fds[sockets->opened] = fd;
+																																	sockets->fds_types[sockets->opened] = socktype;
+																																	sockets->fds_families[sockets->opened] = family;
+																																	sockets->fds_names[sockets->opened] = strdup_client_description(family, protocol, ip, port);
+																																	sockets->fds_acl_flags[sockets->opened] = acl_flags;
+																																	sockets->opened++;
+									
+rrd_init :  => 1.sql_init_database : sqlite3_open => db_meta
+                                     sqlite3_exec(db_meta, "VACUUM"...
+               2.sql_init_context_database : sqlite3_open => db_context_meta
+			                                 init_database_batch(db_context_meta,...) => sqlite3_exec(database, batch[i]...)
+			   3. rrdeng_init => multidb_ctx
+               4.health_init
+			   5.rrdpush_init  
+			   6.localhost = rrdhost_create => sql_store_host_info :db_meta  
+			                                                        #define SQL_STORE_HOST_INFO "INSERT OR REPLACE INTO host " \
+																						"(host_id, hostname, registry_hostname, update_every, os, timezone," \
+																						"tags, hops, memory_mode, abbrev_timezone, utc_offset, program_name, program_version," \
+																						"entries, health_enabled) " \
+																						"values (@host_id, @hostname, @registry_hostname, @update_every, @os, @timezone, @tags, @hops, @memory_mode, " \
+																						"@abbrev_timezone, @utc_offset, @program_name, @program_version, " \
+																						"@entries, @health_enabled);"
+			                                   sql_load_node_id
+			   7.migrate_localhost
+               8.sql_aclk_sync_init => sqlite3_exec[db_meta]:create_host_callback => 1.rrdhost_find_or_create => rrdhost_create =>1). sql_store_host_info => db_meta
+																															      2).sql_store_host_system_info => sql_store_host_system_info_key_value
+																															      3).rrdhost_load_rrdcontext_data => rrdhost_create_rrdcontexts => : host->rrdctx = (RRDCONTEXTS *)dictionary_create(DICTIONARY_FLAG_DONT_OVERWRITE_VALUE); =》 dictionary_create_advanced_with_trace
+																																																 dictionary_register_insert_callback((DICTIONARY *)host->rrdctx, rrdcontext_insert_callback, (void *)host); => dictionary_register_insert_callback => rrdcontext_insert_callback => rrdinstances_create
+																																																 dictionary_register_delete_callback((DICTIONARY *)host->rrdctx, rrdcontext_delete_callback, (void *)host);
+																																																 dictionary_register_conflict_callback((DICTIONARY *)host->rrdctx, rrdcontext_conflict_callback, (void *)host);
+																																																 dictionary_register_react_callback((DICTIONARY *)host->rrdctx, rrdcontext_react_callback, (void *)host);										                                                                        
+			                                                                        2. sql_load_host_labels 
+               9.web_client_api_v1_management_init
+signals_handle  =》signals_waiting  =》 execute_command  =》 command_info_array  =》{"help", cmd_help_execute, CMD_TYPE_HIGH_PRIORITY},                  // show help menu
+																					{"reload-health", cmd_reload_health_execute, CMD_TYPE_ORTHOGONAL},   // reload health configuration
+																					{"save-database", cmd_save_database_execute, CMD_TYPE_ORTHOGONAL},   // save database for memory mode save
+																					{"reopen-logs", cmd_reopen_logs_execute, CMD_TYPE_ORTHOGONAL},       // Close and reopen log files
+																					{"shutdown-agent", cmd_exit_execute, CMD_TYPE_EXCLUSIVE},            // exit cleanly
+																					{"fatal-agent", cmd_fatal_execute, CMD_TYPE_HIGH_PRIORITY},          // exit with fatal error
+																					{"reload-claiming-state", cmd_reload_claiming_state_execute, CMD_TYPE_ORTHOGONAL}, // reload claiming state
+																					{"reload-labels", cmd_reload_labels_execute, CMD_TYPE_ORTHOGONAL},   // reload the labels
+																					{"read-config", cmd_read_config_execute, CMD_TYPE_CONCURRENT},
+																					{"write-config", cmd_write_config_execute, CMD_TYPE_ORTHOGONAL},
+																					{"ping", cmd_ping_execute, CMD_TYPE_ORTHOGONAL},
+																					{"aclk-state", cmd_aclk_state, CMD_TYPE_ORTHOGONAL}
+																			        
+																					=》 cmd_exit_execute =》   netdata_cleanup_and_exit =》  cancel_main_threads  =》 netdata_thread_cancel
+																					                                                                              =》 netdata_exit = 1
+                                     execute_command   =》 commands_exit
+									 execute_command   =》 reap_children 
+			  
+			  
+
+static_threads  =》    netdata_thread_create(st->thread, st->name, NETDATA_THREAD_OPTION_DEFAULT, st->start_routine, st);
+send_statistics =》   用到analytics_data.netdata_config_stream_enabled，其在static_threads_common  =》  analytics_main  =》 analytics_gather_mutable_meta_data 中初始化
+static_threads ： ANALYTICS =》   netdata_thread_create(st->thread, st->name, NETDATA_THREAD_OPTION_DEFAULT, st->start_routine, st);
+			  
+rrdmetric_trigger_updates
+			   
+uv_rwlock_init
+
+db_collection_handle			   
+			   
+rrdset_done =》 rrdset_reset =》 rd->tiers[tier]->collect_ops.flush 
+			   
+			   rrdcontext_trigger_updates
+			   
+			   
+			   
+	Store a chart in the database	   
+    rc = sql_store_chart(
+        chart_uuid, &st->rrdhost->host_uuid, st->type, id, name, st->family, st->context, st->title, st->units, st->plugin_name,
+        st->module_name, st->priority, st->update_every, st->chart_type, st->rrd_memory_mode, st->entries);
+
+	rrd_init=>sql_aclk_sync_init => sqlite3_exec(db_meta, "SELECT host_id, hostname, registry_hostname, update_every, os, "
+           "timezone, tags, hops, memory_mode, abbrev_timezone, utc_offset, program_name, "
+           "program_version, entries, health_enabled FROM host WHERE hops >0;",
+              create_host_callback, NULL, &err_msg)
+			   
+	
+collect:
+independent collectors gather metrics from every data source,every second,and push them to the database with lockless write access.
+store:
+metrics are first stored in ram in a custom database engine that then "spitls" historical metrics to disk for efficient long-term metrics storge.
+check:
+A lockless independent watchdog evaluates health checks on collected metrics,triggers alarms,maintains a health log,and dispatches alarm notifications.
+stream:
+a lockless independent worker streams metrics,in full detail and in real-time,to remote Netdata servers as soon as the collectors gather them.
+archive:
+a lockless independent worker downsamples metrics and exports them to external time-series database.
+query:
+the low-latency internal api supports data queries and highly-interactive single page monitoring applications.
+
+Netdata is a highly efficient, highly modular, metrics management engine. Its lockless design makes it ideal for concurrent operations on the metrics.
+The result is a highly efficient, low-latency system, supporting multiple readers and one writer on each metric.
+
+
+收集:
+独立收集器每秒钟从每个数据源收集指标，并通过无锁写访问将它们推送到数据库。
+存储:
+指标首先存储在自定义数据库引擎的ram中，然后将历史指标“溢出”到磁盘中，以便进行长期有效的指标存储。
+检查:
+无锁的独立看门狗评估收集的指标上的健康检查、触发警报、维护健康日志并分发警报通知。
+流:
+一个无锁的独立工作者流的指标，完全详细和实时，到远程Netdata服务器，只要收集器收集他们。
+存档:
+一个无锁的独立工作者采集数据并导出到外部时间序列数据库。
+查询:
+低延迟的内部API支持数据查询和高交互性的单页监控应用程序。
+Netdata是一个高效、高度模块化的指标管理引擎。它的无锁设计使其成为对指标进行并发操作的理想选择。
+其结果是一个高效、低延迟的系统，在每个指标上支持多个读取器和一个写入器。
+
+
+######### 20220819  周五 #########
+1.netdat源码main主函数的初始化流程中相关数据库的使用梳理研究，socket建立及数据拼接处理等研究，通用事件处理框架的调用梳理。
+2.netdata源码业务线程库中相关数据库使用及功能业务流程中数据的存储流程、逻辑功能梳理；相关网络传输的流程研究梳理，及传输中数据的处理研究。
+
+
+######### 20220822-23  周一 - 周二 #########
+1.fdsvr的相关socid的httcpermissivemode版本打包，自验证运行、安装与卸载自测，socid列表文档更新整理归档和申请书提交备份，代码提交。
+a282e72ad2ade3aafcfa533d96c90747  httcpermissivemode-27222-1.x86_64.rpm
+
+2.  版本6127  飞腾桌面 20210927   打个6128的版本
+首先找到版本对应的commitid:ddc01a5649ea1b3821c3900650edaf91ab0bbc46  ,然后切换到此commitid :git checkout 
+步骤1：对应下面的修改过的文件备份
+root@Kylin:/home/ly/XGS4.0_NEW# git checkout ddc01a5649ea1b3821c3900650edaf91ab0bbc46
+error: Your local changes to the following files would be overwritten by checkout:
+	trunk/TipGui/MainUI/MainUI.pro
+	trunk/TipSilentProcess/MainUI/TipSilentProcess.pro
+	trunk/include/tipappif/app_interface.h
+	trunk/tipcore/Makefile
+	trunk/tipcore/policyModule/policy_hypervisor.c
+	trunk/tipcore/seccontainerModule/sec_container.c
+Please, commit your changes or stash them before you can switch branches.
+Aborting
+对这些文件备份处理。
+
+步骤2：tipcore编译不过，但是生成静态库 libtipcore.a ，把此复制到 newfull_icelib/下重新编译生成libserver.so，然后把libserver.so赋值同步到../lib。
+        然后再回头到tipcore下编译。
+步骤3：
+tipcore编译不过，对比tipcore下的makefile和打包主目录的tipcore下的makefile，对比当下的 root@Kylin:/home/ly/XGS4.0_NEW/trunk/tipcore# diff Makefile /home/ly/Makefile 
+ 修改1）：
+ 1）LIBS += -ltipcore -ltipcomm -lhttcsec -lhttcca -lhttccacrypto -lhttccasm2 -lwjelement -lwjreader -lwjwriter -lxpl -lwlist -lcurl
+ =>  LIBS += -ltipcore -ltipcomm -lhttcsec -lhttcca  -lhttccasm2 -lwjelement -lwjreader -lwjwriter -lxpl  -lcurl
+ 修改2）
+42c42
+< TARGETS = libtipcore.a tipcore apphash  tip_tool_audit tipupdate getuserpkg
+---
+> TARGETS = libtipcore.a tipcore  tipupdate getuserpkg
+
+make clean;make   通过，然后按照正常打包流程继续打包。
+
+
+步骤4：GUI: share_qt_ctl_lib  : qmake \ make clean \ make -j8
+
+步骤5：
+MainUI:
+去掉  -lwlist  -lhttccacrypto -lislsds -lcrypto
+-lcurl 位置往后挪点
+
+步骤6：./buildtest.sh deb ft3
+345a0b8ebe36b01f40a16502e3f3bc7e  tipterminalft_4.1-26128_arm64.deb
+
+######### 20220824  周三 #########
+1. ansible 工具熟悉，源码走读
+2. ftdeb 最新版本打包 
+
+
+
+
+
+
+
+
+========================================================================================================================================================
+==============================================     配置管理客户端相关      =============================================================================
+========================================================================================================================================================
+
+银河飞腾服务器_rpm    IP:10.0.2.100       用户名：root      密码：httc@123     aarch   lib_yhsvr
+【【【银河龙芯服务器_rpm    IP:10.0.2.101       用户名：root      密码：httc@123     mips    lib_zblxsvr
+方德服务器            IP:10.0.2.67        用户名：root      密码: Kxht@1234
+申威服务器        IP:10.0.2.102      用户名：root      密码: httc@123   sw_64
+【【【银河飞腾桌面_deb  IP:192.168.3.18     用户名：root      密码：httc@123     aarch[arm64]   lib_yh     开机后直接登录root用户，其他的开机首先是secadm安全用户
+银河龙芯桌面_deb      IP:192.168.3.140    用户名：root      密码：111111       mips   lib_zblx
+银河龙芯桌面 3A5000   IP:192.168.3.13     用户名：root      密码：httc@123  loongarch64
+方德桌面_deb【齐娜虚拟机】IP:192.168.3.202    用户名：root      密码：123456，     x86_64
+2021-10-26 15:50
+
+首先安全secadm aaaaaaaaaaaaaaa1!或者
+root 111111111111111a!账户下添加q7签名文件，然后开关处注销重启；重启后登录root权限账号，把对应发布的安装包安装，安装完重启。
+
+
+sudo find / -name rsfile*
+
+
+==========  permissive版本 httcpermissivemode_26806_amd64 制作=================
+1.代码在本地更新后，更换到对应平台，在/work/permissive_tool/permissive_check_tool ：make clean;make  生成 permissive，然后把permissive 放到/opt/httc_permissive_mode/下[如果缺少此文件夹就建立]
+2. zip -r permissive.zip  /opt/httc_permissive_mode/permissive  生成压缩文件permissive.zip
+3. 把permissive.zip拷贝到本地，再在方德桌面的打包机安装ziptorpmdeb_1.2_all  并执行start.sh脚本，然后登录网页界面既可以压缩为对应的rpm或者deb 的httcpermissivemode_26806_amd64包了。
+
+
+解压：
+tar xvf webmin-current.tar.gz
+rm -f webmin-current.tar.gz
+压缩：
+tar cvf netdata.gz netdata/
+
+
+已读
+裸代码拉取后编译过程：方德桌面为例
+git clone git@gitlab1.httc.com.cn:WangAnSheng/XGS4.0_NEW.git
+
+cd XGS4.0_NEW/trunk/tipcore/lib
+cp ../lib_fd/* ./                      方德桌面为例,拷贝对应平台的
+cd tipcomm/   make clean; make
+cd tippam/    make clean; make
+
+cd tipsdk/platform/ make clean; make
+cd tipsdk/      make clean; make
+
+cd tipcore/     make clean; make
+cp libtipcore.a ../newfull_icelib/
+cd ../newfull_icelib/ make clean; make
+cd /home/ly/XGS4.0_NEW/trunk/newfull_icelib/
+cp /home/qn/XGS4.0_NEW/trunk/newfull_icelib/Makefile ./    Makefile中遇到报错需修改Makefile  -lIce -lIceUtil库的路径   /work/ice-3.6/cpp/lib/x86_64-linux-gnu/以实际为准
+make
+cd tipcomm/
+cp libtipcomm.a ../newfull_icelib/
+cd newfull_icelib/ make
+cp libserver.so ../lib
+cd ../tipcore/ make
+
+vim seccontainerModule/sec_container.c 
+make
+cp libtipcore.a ../lib
+make
+
+
+cp -rvpf XGS4.0_NEW /home/ly/
+
+版本编译路径在：/work/XGS4.0_NEW/trunk/
+【首先通过git pull时看哪些文件有改动，有改动的需要编译，没有的不需要!!!，以下几步编译都认为是有改动 】
+【【一、打包编译操作顺序及流程：
+1.先编译tipcore下的ca动态库
+2.然后编译tipcore
+3.然后编译newfull_icelib
+4.然后编译tipappif
+5.然后编译GUI
+6.最后build
+说明：有些情况编译报调用的静态库或者动态库冲突时看看使用的库是否是对应平台的，各服务器、桌面机各型号库都是各自专用的。
+【step1：tipcore/ca/so/src/】
+/work/XGS4.0_NEW/trunk/tipcore/ca/so/src/:make clean           src下文件有改动时:trunk/tipcore/ca/so/src/tca_siginself_api.c 
+grep: /etc/system-release: 没有那个文件或目录
+../../../../config.mk:23: extraneous text after 'else' directive    ===不用关注
+root@Kylin:/work/XGS4.0_NEW/trunk/tipcore/ca/so/src#:make
+【step2: tipcore/】
+/work/XGS4.0_NEW/trunk/tipcore/:make clean                     tipcore下文件有改动:trunk/tipcore/include/whitelist.h
+                               :make
+生成 libtipcore.a静态文件，更新到/work/XGS4.0_NEW/trunk/newfull_icelib/下
+cp libtipcore.a  /work/XGS4.0_NEW/trunk/newfull_icelib/
+【step3：trunk/newfull_icelib/】
+/work/XGS4.0_NEW/trunk/newfull_icelib/:make clean              newfull_icelib目录下有更新，重新make:trunk/newfull_icelib/tipcore.cpp
+  :make
+生成libserver.so动态文件，更新到/work/XGS4.0_NEW/trunk/lib/下
+cp libserver.so /work/XGS4.0_NEW/trunk/lib/
+【step4：/trunk/tipappif/】
+cd /work/XGS4.0_NEW/trunk/tipappif/:make clean                 trunk/lib/下lib库已更新，libserver.so更新了
+   :make
+【step5：trunk/TipGui/】
+TipGui下有多个可编译的目录文件：MainUI、share_qt_ctl_lib
+方法1 邢圣仙：直接在TipGui下统一执行:  下级目录MainUI、share_qt_ctl_lib
+/work/XGS4.0_NEW/trunk/TipGui/:qmake            【TipGui.pro变动时需要】
+/work/XGS4.0_NEW/trunk/TipGui/:make clean  
+/work/XGS4.0_NEW/trunk/TipGui/:make -j8
+或者直接在main.cpp随便加个字符，导致make不过，然后把加到字符去掉，重新make -j8即可，即是最新代码的编译版本
+
+方法2 齐娜：share_qt_ctl_lib【先】、MainUI【后】等谁有改动，就编译谁，没改动，不make
+/work/XGS4.0_NEW/trunk/TipGui/share_qt_ctl_lib[先]/:qmake            【XXX.pro变动时需要】
+/work/XGS4.0_NEW/trunk/TipGui/share_qt_ctl_lib/:make clean          
+/work/XGS4.0_NEW/trunk/TipGui/share_qt_ctl_lib[后]/:make -j8
+/work/XGS4.0_NEW/trunk/TipGui/MainUI/:qmake                       【XXX.pro变动时需要】   
+/work/XGS4.0_NEW/trunk/TipGui/MainUI/:make clean            
+/work/XGS4.0_NEW/trunk/TipGui/MainUI[后]/:make -j8
+
+【【服务器两步  rpm：直接buildtest.h，不需要改东西】】
+【1、编译版本】
+./buildtest.sh rpm fdsvr3
+./buildtest.sh rpm ftsvr3
+./buildtest.sh rpm lxsvr3  或 yhlxsvr3
+./buildtest.sh rpm sw3    申威【不需要svr】
+
+/work/XGS4.0_NEW/trunk/tipbuild/:./buildtest.sh rpm sw3
+在trunk/tipbuild/RPMS/sw_64/下生成版本，最新的那个，eg: tipterminalsw-4.1-25721.sw_64.rpm
+【2、生成MD5】
+并在此生成MD5 trunk/tipbuild/RPMS/sw_64/：md5sum tipterminalsw-4.1-25721.sw_64.rpm
+           生成的md5：f45c5d402fd6c827426e705d0130d4cd  tipterminalsw-4.1-25721.sw_64.rpm
+把生成的md5：【f45c5d402fd6c827426e705d0130d4cd  tipterminalsw-4.1-25721.sw_64.rpm】  和版本：【tipterminalsw-4.1-25721.sw_64.rpm】发布到豆豆群即可。
+
+测试包：/trunk/tipbuild/:./buildtest.sh rpm sw3      确认下命令history |grep sw3
+4.1-25321
+正式包：/trunk/tipbuild/:./build.sh rpm sw3      确认下命令history |grep sw3
+4.0-5321
+注意：测试包名【4.1-25321 eg:tipterminalsw-4.1-25321.sw_64.rpm】与正式包名【4.0-5321】的区别
+
+【【桌面机四步 deb:  build前需要改self_debian/ft/control 中的version】】
+./buildtest.sh deb fd3
+./buildtest.sh deb sw3
+./buildtest.sh deb lx3
+./buildtest.sh deb ft3 
+【1、改版本号】build前需要改self_debian/ft/control 中的version
+/buildtest.sh：
+root@Kylin:/work/XGS4.0_NEW/trunk/tipbuild# cat self_debian/ft/control 
+Source: tipterminalfd
+test版本号改为：Version:4.1-25929
+4.1-25929
+
+/build.sh：
+root@Kylin:/work/XGS4.0_NEW/trunk/tipbuild# cat self_debian/ft/control 
+Source: tipterminalfd
+正式版本号改为：Version:4.0-5929
+4.0-5929
+【2、编译版本】
+/work/XGS4.0_NEW/trunk/tipbuild/:./buildtest.sh deb ft3 
+版本在：/work/XGS4.0_NEW/trunk/tipbuild/bldDeb：tipterminalft-4.1-25825.deb
+【3、改版本名字】
+改名字：mv tipterminalft-4.1-25825.deb tipterminalft_4.1-25825_arm64.deb
+【4、生成MD5】
+md5sum tipterminalft_4.1-25825_arm64.deb 
+5d3a815575a609817b9dfc790261b8dc  tipterminalft_4.1-25825_arm64.deb
+
+
+
+1、安装测试包：
+【服务器】在生成的文件位置直接安装即可：
+安装：rpm -ivh tipterminalsw-4.1-25721.sw_64.rpm
+查看是否安装成功：rpm -qa | grep tipterminalsw
+file /opt/softmanager/tipterminal/bin/httcgui from install of tipterminalsw-4.1-25721.sw_64 conflicts with file from package tipterminalsw-4.1-25504.sw_64
+安装不成功时，删除老版本
+rpm -e tipterminalsw-4.1-25504.sw_64
+
+rpm -qi：查询软件包的详细信息
+安装rpm软件
+1.安装软件：执行rpm -ivh rpm包名，如：
+rpm -ivh apache-1.3.6.i386.rpm
+2.升级软件：执行rpm -Uvh rpm包名。
+3.反安装：执行rpm -e rpm包名。
+4.查询软件包的详细信息：执行rpm -qpi rpm包名
+5.查看某个包是否被安装 rpm -qa | grep XXXX(moudle name)
+
+再次安装
+rpm -ivh tipterminalsw-4.1-25721.sw_64.rpm
+
+查看是否安装成功
+[root@localhost tipterminal]# rpm -qa | grep tipterminalsw
+tipterminalsw-4.1-25721.sw_64
+
+【客户端】安装deb：eg：140、18 龙芯桌面 方德桌面等等
+在版本所在目录下安装与卸载：
+安装：dpkg -i tipterminalfd_4.1-25825_amd64.deb
+卸载：dpkg -P tipterminalfd
+查看版本信息：dpkg -I tipterminalft-4.1-25825.deb
+查看已经安装的软件：dpkg -l|grep testsoft
+dpkg 指定目录安装软件验证
+root@wanans-virtual-machine:/home/ly# dpkg -i --instdir=/tmp testsoft100_1.0.0_amd64.deb
+root@wanans-virtual-machine:/home/ly# dpkg -l|grep testsoft
+root@wanans-virtual-machine:/home/ly# dpkg -P --instdir=/tmp testsoft100
+
+
+
+2、启动测试包：
+安装产品后自动启动后台程序，启动顺序为：执行./tiptermd start 就是启动httcplatform和tipcore
+2.1、先启动/opt/tipterminal/bin/httcplatform
+2.2、之后启动/opt/tipterminal/bin/tipcore
+2.3、在两个程序启动后才能启动/opt/tipterminal/bin/httcgui终端用户界面启动程序
+三个启动程序都只能启动一次，再启动会失败。打乱启动顺序会导致启动失败或者运行异常。
+
+[root@localhost tipterminal]# pwd
+/opt/softmanager/tipterminal
+[root@localhost tipterminal]# ls
+bin  etc  font lib  script  var
+[root@localhost tipterminal]# cd /opt/softmanager/tipterminal/script/
+[root@localhost script]# ls
+dbinit.sh  httcterm.desktop  httc_ui_svr.sh  install.sh  smzy_tipterminal.service  tiptermd  TIPterminal.conf  tipterminal.service
+启动httcplatform和tipcore:./tiptermd start       ;   
+[root@localhost script]# ./tiptermd start
+[root@localhost script]# ps -ef | grep tip
+root      265425       1  0 09:53 ?        00:00:00 /opt/softmanager/tipterminal/bin/httcplatform -d /opt/softmanager/tipterminal/var/run/httcplatform.pid
+root      265432       1  0 09:53 ?        00:00:00 /opt/softmanager/tipterminal/bin/tipcore -d /opt/softmanager/tipterminal/var/run/tipcore.pid   主副进程
+root      265637  265432  2 09:54 ?        00:00:00 /opt/softmanager/tipterminal/bin/tipcore -d /opt/softmanager/tipterminal/var/run/tipcore.pid
+root      265665  190039  0 09:54 pts/2    00:00:00 grep tip
+
+备注：
+停止httcplatform和tipcore:rm -rf softmanager/tipterminal/ 和 ./tiptermd stop 
+当打开客户端在安全管理员查到的版本信息和安装的不同时：
+a)   ./tiptermd stop ；   killall httcgui
+b) 删除/opt/softmanager/下的tipterminal：rm -rf tipterminal
+c) dpkg -P tipterminalfd    卸载版本【deb桌面机】
+d) ps -ef | grep tip  查看确保全部删除tip  httcgui
+e) 重新安装tipterminalfd、启动tip和httcgui
+
+查看是否安装：
+dpkg -l |grep soft_install
+
+[root@localhost script]# cd ../var/
+[root@localhost var]# ls
+appif.log    config      installed_soft_number.txt log        pem_pfx   policy.txt  pzglpfx.pfx  root.cer  secp   switch_sock        test.log       version.txt
+ca.cer      container_sock  lic.resp   nest.q7        pkg   ProductInspection.xml register     run       sp   sysbasecheck        tipcore.conf
+certificate  httcsec      localQ7AllPassedCert.txt offlinepolicy  plat
+
+
+另外：
+如果替换httcgui并通过gdb启动，首先让两个tipcore启动完成后再杀死httcgui，然后再启动对应httcgui，因为httcgui会检测tipcore的个数，不是2个将无法启动。
+
+
+首先安全secadm aaaaaaaaaaaaaaa1!或者root 111111111111111a!账户下添加q7签名文件，然后开关处注销重启；重启后登录root权限账号，把对应发布的安装包安装，安装完重启。
+
+
+
+【客户端】安装deb：eg：140、18 龙芯桌面 方德桌面等等
+在版本所在目录下安装与卸载：
+安装：dpkg -i tipterminalfd_4.1-25825_amd64.deb
+卸载：dpkg -P tipterminalfd
+查看版本信息：dpkg -I tipterminalft-4.1-25825.deb
+查看已经安装的软件：dpkg -l|grep testsoft
+dpkg 指定目录安装软件验证
+root@wanans-virtual-machine:/home/ly# dpkg -i --instdir=/tmp testsoft100_1.0.0_amd64.deb
+root@wanans-virtual-machine:/home/ly# dpkg -l|grep testsoft
+root@wanans-virtual-machine:/home/ly# dpkg -P --instdir=/tmp testsoft100
+
+【服务器】在生成的文件位置直接安装即可：
+查询软件包的详细信息:rpm -qi
+rpm -qi tipterminalfdsvr-4.0-5906.x86_64.rpm
+安装rpm软件
+1.安装软件：执行rpm -ivh rpm包名，如：
+rpm -ivh tipterminalsw-4.1-25721.sw_64.rpm
+2.升级软件：执行rpm -Uvh rpm包名。
+rpm -Uvh tipterminalsw-4.1-25721.sw_64.rpm
+3.反安装\卸载：执行rpm -e rpm包名。
+rpm -e tipterminalsw-4.1-25504.sw_64
+4.查询软件包的详细信息：执行rpm -qpi rpm包名
+rpm -qi tipterminalfdsvr-4.0-5906.x86_64.rpm
+5.查看某个包是否被安装 rpm -qa | grep XXXX(moudle name)
+[root@localhost tipterminal]# rpm -qa | grep tipterminalsw
+tipterminalsw-4.1-25721.sw_64
+
+
+所有的测试都是在强访开启的前提下进行的：验证如下
+1.无法安装的包，换个存放目录再次安装试试。
+2.此时是正常测试，强访策略是开着的，无法安装。可关闭强访进行再次安装测试，如果成功，则说明是强访策略导致。 ==此次二楼飞腾桌面D2000问题就属于这个情况
+3.假如强访关闭，包的存放位置也换了，还是无法安装，大概率是包自身问题。包自身问题，可以在别的机器再次测试这个包的添加与安装。
+
+
+
+######################################## 机器还原方法 ,强访、白名单相关， #######################################################
+1.方德桌面和方德服务器：  先登录secadm、登陆后紧接着F1、打开还原开关、F10保存；然后登录root、找到对应的要 还原的系统，还原即可；
+飞腾桌面：先登录secadm、登陆后紧接按E  添加或者修改 kysec_status=4 enforcing=0 ，按F10保持 ；如果打开了还原开关则现登录secadm再注销后再登录root
+2.银河：银河飞腾、银河龙芯的桌面机和服务器,申威，登录root选择对应的还原节点，然后登录secadm再注销登录root
+
+方德桌面：
+还原操作：
+先登录secadm，立即F1进入配置，打开系统还原开关，按F10保持
+再登录root，直接弹出还原选择界面，下一步后在下拉菜单选择相应的还原点[快照点]
+关闭强访：
+先把/etc/selinux/baseline复制到/root下，然后把baseline中的20行左右的三行sec内内容删除，此三行删除后，
+登录178管理中心，在客户端管理中的命令参数管理的cp1、cp2发送命令到对应终端，分别点开cp1、cp2看是否发送成功。
+发送后重启再登录[先secadm，再注销重新登录root]，此时即可操作setenforce 0,setima 0 进行强访和白名单的关闭操作【具备操作了，不一定要去操作关闭】。
+注意事项：
+1.关闭强访和白名单后，假如锁屏，设备就只能重启了，无法继续使用设备。
+2.关闭强访和白名单后，手动安装配置管理版本dpkg -i tipxxxx.deb，后重启，配置管理是无法启动的，需要还原环境。
+
+=== 正常运行环境是打开强访和白名单： ===
+setenforce 0  关闭强访；getenforce 显示permissive
+setenforce 1  打开强访；getenforce 显示Enforcing
+setima 0  关闭白名单
+setima 1  打开白名单
+实例：gdb在打开强访和白名单时可用、操作，httcgui中的signal->coredump有自动调用gdb的，所以gdb设置为白名单，在打开强访和白名单状态下可用。
+1. 下载对应平台gdb到/usr/bin/下：/usr/bin/gdb 
+2. 查看/usr/bin/下其他已经假如白名单的文件的属组 ls -lZ:system_u:object_r   ,此时gdb 是sysadm_u
+3. 此时先关闭强访和白名单 setenforce 0 、 setima 0， 然后进行修改属组：chcon -u system_u gdb 、添加白名单：evmctl dir_ima_hash gdb
+4.设置完成后打开强访和白名单：setenforce 1  、setima 1
+5. 此时在任意目录下执行gdb都可执行了，即httcgui中的signal->coredump能自动调用gdb，gdb可用。
+
+
+
+
+######################################## 签名流程  #######################################################
+【涉密专用机】软件类型：系统类 基线类 普通类 安全类 Q7签名文件：系统类和基线类用“操作系统”优盘【客户端属于系统包 配置管理】；普通和安全用一般普通那个优盘
+步骤1.版本自验证流程：签名到一楼，自己放版本的优盘[插下面口]+签名优盘（对应需要的）[插上面口]  选择"操作系统.excel" 
+   1.插上存放版本的自己U盘[最好一个版本一个文件夹]+再插上相应签名u盘。
+   2.登录：涉密专用计算机平台签名系统(测评中心版)，显示：证书登录，证书名显示 “操作系统”时直接登录【密码默认，没有时再说】
+   3.导入：登录后在右上角点击“导入” =》 选择“操作系统.xls”
+   4.类别：涉密专用计算机-对应客户端版本；涉密专用服务器-对应服务器版本
+   5.类型：台式普通型
+   6.计算机平台类型：三期或者四期，三期-桌面\服务器-xxx[中科方德]-xxx[版本号]    专用信息设备类型：配置管理[从下拉菜单中查询]
+   7.生成文件个数：为每个软件包生成一个签名文件。
+   8.需要签名文件路径：F:\20211014   => 确定
+   9.保存 =》 确定 生成q7签名文件，和对应签名的软件版本在同一目录文件夹中。 【飞腾桌面q7生成文件后缀：12.q7】
+步骤2.首先安全secadm aaaaaaaaaaaaaaa1!或者root 111111111111111a![之前版本root下不能加q7现在的可以]账户下添加q7签名文件，然后开关处注销重启；重启后登录root权限账号，把对应发布的新版本安装包添加、安装，安装完重启。
+之后可在新版本下验证测试。 【已经有版本正在运行，执行升级注销流程】
+
+先删.policy.db软件（软件名的通过md5值），再删除.ca.db（软件对应q7）
+
+
+#define LICENSE_SOCID_JSONFILE "/etc/license/license.lic"
+#define SM2_PUBLIC_ENCRYPT_KEYPATH "/opt/softmanager/tipterminal/var/bjcaPub.key"
+#define SM2_PRIVATE_DECRYPT_KEYPATH "/opt/softmanager/tipterminal/var/bjcaPri.key"
+
+
+
+方德虚拟机：
+secadm
+123456,
+
+
+银河飞腾服务器开发机：10.0.2.100    root  httc@123
+银河龙芯服务器开发机：10.0.2.101    root  httc@123
+银河申威服务器开发机：10.0.2.102    root  httc@123
+
+飞腾桌面打包机测试：home下建一个自己的目录，那是打包机
+192.168.3.18
+root 
+httc@123
+
+龙芯桌面打包机测试：
+192.168.3.140
+root
+111111
+
+
+
+
+ssh root@192.168.12.101
+
+telnet 172.27.45.250
+root     dtm.1234
+
+
+ssh liying@192.168.169.129
+passwd:1
+
+telnet 192.168.169.129
+usrname:liying
+passwd:1
+
+
+cmd:C:\Users\Lenovo、>ftp 192.168.169.129
+用户名：ftpuser
+密码：1
+
+
+首先安全secadm aaaaaaaaaaaaaaa1!或者
+root 111111111111111a!账户下添加q7签名文件，然后开关处注销重启；重启后登录root权限账号，把对应发布的安装包安装，安装完重启。
+
+
+签名到一楼，自己放版本的优盘+上面两个优盘（对应需要的）  
+
+在专用机版本自验证流程：签名到一楼，自己放版本的优盘+上面两个优盘（对应需要的）  
+步骤1.软件类型：系统类 基线类 普通类 安全类 
+      Q7签名文件：系统类和基线类用“操作系统”优盘；普通和安全用一般普通那个优盘
+步骤2.首先安全secadm aaaaaaaaaaaaaaa1!或者root 111111111111111a!账户下添加q7签名文件，然后开关处注销重启；重启后登录root权限账号，把对应发布的新版本安装包安装，安装完重启。
+之后可在新版本下验证测试。
+三合一:系统  安全  审计
+
+
+

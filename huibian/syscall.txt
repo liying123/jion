@@ -1,0 +1,97 @@
+
+######################  系统调用  ############################
+下面我们用汇编语言来试一试执行系统调用，一般情况下我们都不会直接使用系统调用指令，下面的例子仅仅是为了演示，标准编程中请使用API。
+
+.data
+
+msg:
+    .ascii "Hello from syscall !\n"
+    len = . - msg
+
+.text
+    .global _start
+
+_start:
+  movq  $1,   %rax
+    movq  $1,   %rdi
+    movq  $msg, %rsi
+    movq  $len, %rdx
+    syscall
+
+    movq  $60,  %rax
+    xorq  %rdi, %rdi
+    syscall
+	
+
+执行如下命令，先汇编后链接
+
+gcc -c -o hello-syscall64.o hello-syscall64.S
+ld -entry _start hello-syscall64.o -o hello-syscall64
+
+然后运行程序
+./hello-syscall64
+可以看到运行成功，命令行输出了 Hello from syscall !
+
+
+下面我们再来演示一下32位进程兼容模式的系统调用，汇编代码如下：
+
+.data
+msg1:
+    .ascii "Hello from int 0x80 !\n"
+    len1 = . - msg1
+msg2:
+    .ascii "Hello from sysenter !\n"
+    len2 = . - msg2
+
+.text
+    .globl _start
+
+_start:
+    movl $4,    %eax
+    movl $1,    %ebx
+    movl $msg1, %ecx
+    movl $len1, %edx
+    int  $0x80
+
+
+    movl $4,    %eax
+    movl $1,    %ebx
+    movl $msg2, %ecx
+    movl $len2, %edx
+    call sys
+ 
+
+    movl $1, %eax
+    movl $0, %ebx
+    int $0x80
+
+sys:
+    pushl %ecx
+    pushl %edx
+    pushl %ebp
+    movl %esp, %ebp
+    sysenter
+    popl %ebp
+    popl %edx
+    popl %ecx
+    ret
+
+
+执行如下命令，先汇编后链接
+
+gcc -m32 -c -o hello-syscall32.o hello-syscall32.S
+ld -melf_i386 -entry _start hello-syscall32.o -o hello-syscall32
+然后运行程序
+./hello-syscall32
+可以看到运行成功，命令行输出了
+Hello from int 0x80 !
+Hello from sysenter !
+
+从上面的汇编代码示例中我们看到了用户空间是如何调用系统调用的，这也正是libc中的做法。
+我们前面有个内容没有讲，那就是执行了系统调用指令，CPU是如何切换到特权模式的。其实前
+面的系统调用入口函数设置里面也在相应的寄存器里面设置了__KERNEL_CS，这个会导致CPU切到特权模式来执行。
+
+
+
+
+
